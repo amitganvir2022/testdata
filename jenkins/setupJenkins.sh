@@ -76,7 +76,15 @@ Step3: Create free-stype job and execute kubectl  for example -> kubectl run ngi
 
 Step4: Run your job
 
+
 ############ how to compile java code using maven form Jekins Job  ############
+sudo su -
+apt install maven -y
 
-
+## use below command on jenkins jobs UI
+user your own repod  https://github.com/amitganvir23/hello_maven.git
+cd lcd
+mvn clean
+mvn compile
+mvn package
 
