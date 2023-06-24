@@ -1,6 +1,7 @@
 sudo su -     ## login with root
 
 ## Step1: Goto Jenkins ec2
+sudo su -
 apt-get update
 apt install default-jre -y
 java --version
@@ -12,10 +13,12 @@ source /etc/environment
 echo $JAVA_HOME
 java --version
 
-## Step2: Goto Jenkins ec2
-## Install Jenkins use Link for updated steps https://www.jenkins.io/doc/book/installing/linux/
+
+Step2: Goto Jenkins ec2 - nstall Jenkins use Link for updated steps https://www.jenkins.io/doc/book/installing/linux/
+sudo su -
 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
   /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+  
 echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
   https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
@@ -29,6 +32,7 @@ Open your brower and use your ec2 public IP with port 8080
 http://<ec2-ip>:8080
 
 ## Goto Jenkins ece - Use your password for Administrator password
+sudo su -
 cat /var/lib/jenkins/secrets/initialAdminPassword
 
 
@@ -37,6 +41,7 @@ Jenkins basic Configuration
 Store Credentials in jenkins
 
 ## On Jenkins ec2
+sudo su -
 echo 'JENKINS_HOME="/var/lib/jenkins/"' >> /etc/environment
 source /etc/environment
 echo $JENKINS_HOME
