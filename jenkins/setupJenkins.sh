@@ -67,8 +67,9 @@ echo deb http://apt.kubernetes.io/ kubernetes-xenial main | sudo tee /etc/apt/so
 apt update
 apt install kubectl=1.21.1-00 -y
 
-# Step3: Create free-stype job and execute kubectl  for example -> kubectl run nginx --image=nginx
+Step3: Create free-stype job and execute kubectl  for example -> kubectl run nginx --image=nginx
 
+Step4: Run your job
 
 ############ how to compile java code using maven form Jekins Job  ############
 
