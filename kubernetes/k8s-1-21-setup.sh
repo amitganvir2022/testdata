@@ -16,7 +16,6 @@ Create Security Group and all all TCP port as of now on temprory bases. Use this
 
 Step3:
 ## Master and Worker Side
-``
 sudo apt update
 sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -31,11 +30,9 @@ apt install kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00 -y
 sudo apt-mark hold kubelet kubeadm kubectl
 sysctl net.bridge.bridge-nf-call-iptables=1
 
-``
 
 Step4:
 # On master Side
-``
 #kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt
 kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
 mkdir /root/.kube
@@ -45,7 +42,7 @@ kubectl apply -f https://docs.projectcalico.org/archive/v3.20/manifests/calico.y
 #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 systemctl restart kubelet.service
 kubeadm token create --print-join-command
-``
+
 
 Step5:
 #On Worker Side
@@ -53,6 +50,5 @@ Step5:
 
 Step6:
 # On Master Side
-``
 kubect get nodes
-``
+
