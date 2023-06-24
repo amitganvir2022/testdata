@@ -1,6 +1,6 @@
 sudo su -     ## login with root
 
-## Step1:
+## Step1: Goto Jenkins ec2
 apt-get update
 apt install default-jre -y
 java --version
@@ -12,7 +12,7 @@ source /etc/environment
 echo $JAVA_HOME
 java --version
 
-## Step2:
+## Step2: Goto Jenkins ec2
 ## Install Jenkins use Link for updated steps https://www.jenkins.io/doc/book/installing/linux/
 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
   /usr/share/keyrings/jenkins-keyring.asc > /dev/null
@@ -24,15 +24,15 @@ sudo apt-get update
 sudo apt-get install jenkins
 ps -ef | grep jenkins
 
-## Step3:
+## Step3: Open incase if its not opening allow port in Security Group
 Open your brower and use your ec2 public IP with port 8080
 http://<ec2-ip>:8080
 
-## Use your password for Administrator password
+## Goto Jenkins ece - Use your password for Administrator password
 cat /var/lib/jenkins/secrets/initialAdminPassword
 
 
-##Jenkins Plugin
+##Jenkins Plugin on Browers
 Jenkins basic Configuration
 Store Credentials in jenkins
 
@@ -43,8 +43,7 @@ echo $JENKINS_HOME
 
 
 ############ how to run kubernetes container form Jekins Job  ############
-Step1:
-## Goto Master ec2 and copy content of below file
+Step1: Goto Master ec2 and copy content of below file
 cat /etc/kubernetes/admin.conf 
 
 Step2: Got to Jenkins ec2
