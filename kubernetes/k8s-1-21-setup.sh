@@ -9,8 +9,10 @@ Create Security Group and all all TCP port as of now on temprory bases. Use this
 
 #Step2
 ## Launche ec2 instances
-1) Master will Required at least  minimum 4 GB RAM, 2 Core CPU (t2.medium) 
-2) Worker will Required at least minimum 1 GB RAM, 1 Core CPU (t2.micro)
+## Use your Security Group while luanching and your keypair
+1) ec2 master Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.medium - create key pair -network setting , security group set to allow all traffic as of now from anywhere  --> launch instace
+2) ec2 Worker Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.micro - use existing key pair for master -network setting  , use existing security group for master - instance number 2 --> launch instace
+
 
 #
 
