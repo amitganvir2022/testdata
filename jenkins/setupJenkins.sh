@@ -24,7 +24,7 @@ echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
   
 sudo apt-get update
-sudo apt-get install jenkins
+sudo apt-get install jenkins -y
 ps -ef | grep jenkins
 
 ## Step3: Open incase if its not opening allow port in Security Group
