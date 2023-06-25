@@ -15,7 +15,8 @@ Create Security Group and all all TCP port as of now on temprory bases. Use this
 #
 
 Step3:
-## Master and Worker Side
+## Putty(ssh) Master and Worker ec2 and perofrm below commands on both
+sudo su -
 sudo apt update
 sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
