@@ -34,6 +34,7 @@ sysctl net.bridge.bridge-nf-call-iptables=1
 
 Step4:
 # On master Side
+sudo su -
 #kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt
 kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
 mkdir /root/.kube
@@ -47,9 +48,9 @@ kubeadm token create --print-join-command
 
 Step5:
 #On Worker Side
-## Execute output of 'kubeadm token' on Worker node
+## Execute output of 'kubeadm token' from above command on Worker node
 
 Step6:
 # On Master Side
-kubect get nodes
+kubectl get nodes
 
