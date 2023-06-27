@@ -13,7 +13,7 @@ Create Security Group and all all Traffic port as of now on temprory bases. Use 
 
 #
 
-Step3: ---------------------------------------------------------------------------------------------------------------------------------
+# Step3: ---------------------------------------------------------------------------------------------------------------------------------
 ##### Putty(ssh) Master and Worker ec2 and perofrm below commands on both - Login with root user #####
 sudo su -
 
@@ -33,7 +33,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sysctl net.bridge.bridge-nf-call-iptables=1
 
 
-Step4: # On master Side ---------------------------------------------------------------------------------------------------------------------------------
+# Step4: # On master Side ---------------------------------------------------------------------------------------------------------------------------------
 sudo su -
 kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
 mkdir /root/.kube
