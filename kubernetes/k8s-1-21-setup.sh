@@ -1,23 +1,20 @@
 #!/bin/bash 
 
-## On Worker and Master Node
-master Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.medium - create key pair -network setting , security group set to allow all traffic as of now from anywhere  --> launch instace
-Worker Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.micro - use existing key pair for master -network setting  , use existing security group for master - instance number 2 --> launch instace
 
-# Step1:
-Create Security Group and all all TCP port as of now on temprory bases. Use this Security Group while launching Maseter and Worker ec2.
+# Step1: ---------------------------------------------------------------------------------------------------------------------------------
+Create Security Group and all all Traffic port as of now on temprory bases. Use this Security Group while launching Maseter and Worker ec2.
 
-#Step2
-## Launche ec2 instances
-## Use your Security Group while luanching and your keypair
-1) ec2 master Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.medium - create key pair -network setting , security group set to allow all traffic as of now from anywhere  --> launch instace
-2) ec2 Worker Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.micro - use existing key pair for master -network setting  , use existing security group for master - instance number 2 --> launch instace
+#Step2: ---------------------------------------------------------------------------------------------------------------------------------
+##### Launche ec2 instances
+###### Use your Security Group while luanching and your keypair
+# 1) ec2 master Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.medium - create key pair -network setting , security group set to allow all traffic as of now from anywhere  --> launch instace
+# 2) ec2 Worker Node Configuration - instance name : Ubuntu - ubuntu20.04  - t2.micro - use existing key pair for master -network setting  , use existing security group for master - instance number 2 --> launch instace
 
 
 #
 
-Step3:
-## Putty(ssh) Master and Worker ec2 and perofrm below commands on both - Login with root user
+Step3: ---------------------------------------------------------------------------------------------------------------------------------
+##### Putty(ssh) Master and Worker ec2 and perofrm below commands on both - Login with root user #####
 sudo su -
 
 apt-get update -y
@@ -36,7 +33,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sysctl net.bridge.bridge-nf-call-iptables=1
 
 
-Step4: # On master Side
+Step4: # On master Side ---------------------------------------------------------------------------------------------------------------------------------
 sudo su -
 kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
 mkdir /root/.kube
@@ -69,11 +66,12 @@ systemctl restart kubelet.service
 kubeadm token create --print-join-command
 
 
-Step5:
+Step5: ---------------------------------------------------------------------------------------------------------------------------------
 #On Worker Side
-## Execute output of 'kubeadm token' from above command on Worker node
+## Execute 'kubeadm token' command output from master node and run it in Worker node. So that it will join to as a Worker node in k8s cluster
+For example: ##kubeadm join 172.31.22.254:6443 --token t5wam7.35gqolngm80zf9di --discovery-token-ca-cert-hash sha256:60b88e1203525836853e98022aefe92348262bf8e63986dece6bb8270209daf4
 
-Step6:
-# On Master Side
+Step6: ---------------------------------------------------------------------------------------------------------------------------------
+# On Master Side, now execute below command to check cluster nodes.
 kubectl get nodes
 
