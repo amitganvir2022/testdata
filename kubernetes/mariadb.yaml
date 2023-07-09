@@ -23,3 +23,43 @@ spec:
   selector:
     matchLabels:
       app: db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  type: NodePort
+  ports:
+    - port: 3060
+      name: db
+  selector:
+    app: db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  labels:
+    app: mlflow
+spec:
+  template:
+    metadata:
+      name: mlflow
+      labels:
+        app: mlflow
+    spec:
+     containers:
+     - name: mlflow
+       image: ghcr.io/mlflow/mlflow:v2.1.1
+       command: ["/bin/sh","-c"]
+       args: ["pip install pymysql;mlflow server --host 0.0.0.0 -p 5100 --backend-store-uri
+mysql+pymysql://root:1234@$db.default.svc.cluster.local:3306/test --default-artifact-root file:///var/mm/mlflow/artifacts"]
+       ports:
+        - containerPort: 5100
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
