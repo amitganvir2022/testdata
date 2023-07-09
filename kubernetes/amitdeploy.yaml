@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amit5
+  labels:
+    app: amit5
+spec:
+  template:
+    metadata:
+      name: amit5
+      labels:
+        app: amit5
+    spec:
+     containers:
+     - name: amit5
+       image: nginx
+  replicas: 1
+  selector:
+    matchLabels:
+      app: amit5
