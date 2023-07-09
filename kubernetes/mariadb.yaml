@@ -13,9 +13,9 @@ spec:
     spec:
      containers:
      - name: db
-       image: mariadb
+       image: bitnami/mariadb:latest
        ports:
-        - containerPort: 3808
+        - containerPort: 3306
        env:
         - name: MARIADB_ROOT_PASSWORD
           value: "1234"
