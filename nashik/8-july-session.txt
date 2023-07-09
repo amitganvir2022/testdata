@@ -82,6 +82,7 @@ WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
 COPY ./ ./
+RUN chmod +x node_modules/.bin/react-scripts
 RUN npm i
 CMD ["npm", "run", "start"]
 ----
