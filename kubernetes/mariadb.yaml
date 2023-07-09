@@ -56,7 +56,7 @@ spec:
        image: ghcr.io/mlflow/mlflow:v2.1.1
        command: ["/bin/sh","-c"]
        args: ["pip install pymysql;mlflow server --host 0.0.0.0 -p 5100 --backend-store-uri
-mysql+pymysql://root:1234@$db.default.svc.cluster.local:3306/test --default-artifact-root file:///var/mm/mlflow/artifacts"]
+mysql+pymysql://root:1234@<YOUR PODIP>:3306/test --default-artifact-root file:///var/mm/mlflow/artifacts"]
        ports:
         - containerPort: 5100
   replicas: 1
