@@ -1,0 +1,22 @@
+1) Create index.haml
+<html>
+  <head>
+    <title> Nashik MET-IIT</title>
+  </head>
+</html>
+
+2) Create Docker image using above index.html file
+
+Question2:
+1) Create Deployment for Nginx Frontend application on K8s
+2) Create Service to access Nginx Frontend application on K8s
+54.159.154.29
+44.211.69.221
+54.167.28.219
+
+Note:
+ 1) Use Master IP: 44.211.69.221 and nashik.ppk file from git
+ 2) Create your ROLLE Number Folder in /root/exam
+ 3) user your ROLLE Number for app deployemnt and service
+ 4) Validate your application on Browser
+ 5) Once tasks done let me know the NodePort of service(30001 - 30113)
