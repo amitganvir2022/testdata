@@ -1,0 +1,89 @@
+#### How to install Docker in Ubuntu ####
+##(login with root User)
+$ sudo su - 
+# apt-get update
+
+-To install and start Docker
+# apt-get install docker.io -y
+# systemctl start docker
+# systemctl status docker
+# systemctl enable docker
+
+## How to run container ##
+docker pull busybox
+docker images
+docker run busybox echo "Hello"
+docker run -itd busybox sleep 60
+docker ps (for running container)
+docker ps -a (for all)
+
+## how to jump in a container
+docker run -itd --name app1 busybox sleep 1d
+
+docker exec -it <Container ID/Name> <cmd>
+docker exec -it app1 sh
+
+docker ps
+docker stop app1
+docker start app1
+docker restart app1
+docker rm app1 OR docker rm -f app1
+
+## how to run Nginx FE app
+docker run -itd --name fe1 -p 8080:80 nginx
+
+<ec2Port>:<ContainerPort>
+8080:80
+## On firefox/chrom
+http://<ec2-ip>:<ec2Port>
+http://44.204.162.106:8080
+
+## To remove all the containers
+docker rm -f $(docker ps -qa)
+
+######################## how to create nginx docker image ###############
+echo AMIT > index.html
+
+vi Dockerfile
+FROM nginx:latest
+COPY index.html /usr/share/nginx/html/index.html
+
+:wq
+docker build . -t "fe:v1"
+docker run -itd --name myfe1 -p 8084:80 fe:v1
+
+## On firefox/chrome
+http://<ec2-ip>:<ec2Port>
+http://44.204.162.106:8084
+
+## Only for 3.82.252.80
+docker build . -t "amitfe:v1"
+docker run -itd --name myfe1 -p 8084:80 amitfe:v1
+
+
+########## Creating Java docker image ############
+
+vi Dockerfile
+FROM anapsix/alpine-java:8_jdk_nashorn
+COPY hello.jar /app.jar
+CMD ["java", "-jar", "/app.jar"]
+
+################ Creating NodeJS docker image ##################
+----
+FROM node:alpine
+WORKDIR /app
+COPY package.json ./
+COPY package-lock.json ./
+COPY ./ ./
+RUN chmod +x node_modules/.bin/react-scripts
+RUN npm i
+CMD ["npm", "run", "start"]
+----
+
+
+
+
+
+
+
+
