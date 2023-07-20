@@ -1,3 +1,4 @@
+###################################### Create java docker image ##############################
 root@ip-172-31-84-38:~# git clone https://github.com/amitganvir2022/testdata.git
 
 root@ip-172-31-84-38:~# mkdir java-app
@@ -24,7 +25,7 @@ root@ip-172-31-84-38:~/java-app# docker logs app1
 #### to remove docker images
 root@ip-172-31-84-38:~/java-app# docker rmi java-app:v1 21abe91b4321
 
-##### docker image creation from ENTRYPOINT
+#################### docker image creation from ENTRYPOINT#############################################
 
 root@ip-172-31-84-38:~/java-app# cd ../testdata/docker-java-image/
 root@ip-172-31-84-38:~/testdata/docker-java-image# docker build . -t "java:v2"
@@ -35,3 +36,43 @@ Hello World, This is Gradle build java application without hardcoding server por
 root@ip-172-31-84-38:~/testdata/docker-java-image#
 
 
+
+####################### docker push image on dockerhub ##################################################
+root@ip-172-31-84-38:~# docker login -u amitganvir6
+
+root@ip-172-31-84-38:~# cd java-app/
+
+root@ip-172-31-84-38:~/java-app# docker build . -t "amitganvir6/java-app:v1"
+root@ip-172-31-84-38:~/java-app# docker images
+root@ip-172-31-84-38:~/java-app# docker push amitganvir6/java-app:v1
+
+
+######################## docker push with diff tag name or exisitng image name changing with tag name####################
+root@ip-172-31-84-38:~# docker images
+REPOSITORY             TAG             IMAGE ID       CREATED          SIZE
+amitganvir6/java-app   v1              0ebeb27c695e   5 minutes ago    190MB
+java                   v2              0d4f4e8e6e76   36 minutes ago   190MB
+busybox                latest          a416a98b71e2   28 hours ago     4.26MB
+anapsix/alpine-java    8_jdk_nashorn   21abe91b4321   4 years ago      174MB
+root@ip-172-31-84-38:~# docker tag 0d4f4e8e6e76 amitganvir6/java:v2
+
+
+root@ip-172-31-84-38:~# docker images
+REPOSITORY             TAG             IMAGE ID       CREATED          SIZE
+amitganvir6/java-app   v1              0ebeb27c695e   9 minutes ago    190MB
+amitganvir6/java       v2              0d4f4e8e6e76   41 minutes ago   190MB
+java                   v2              0d4f4e8e6e76   41 minutes ago   190MB
+busybox                latest          a416a98b71e2   28 hours ago     4.26MB
+anapsix/alpine-java    8_jdk_nashorn   21abe91b4321   4 years ago      174MB
+root@ip-172-31-84-38:~#
+
+
+root@ip-172-31-84-38:~# docker push amitganvir6/java:v2
+The push refers to repository [docker.io/amitganvir6/java]
+6d647c5f13b8: Pushed
+4c26c97fa318: Pushed
+c8bbb6a88285: Pushed
+bbd64a2369b8: Pushed
+2b154e0b7dd9: Mounted from amitganvir6/java-app
+767f936afb51: Mounted from amitganvir6/java-app
+v2: digest: sha256:c62b13b31d295c55b1f63fd98e3ac04b32aa44f5ab30efbdbead5cce6b7e57dd size: 1572
