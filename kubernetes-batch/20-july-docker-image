@@ -1,0 +1,37 @@
+root@ip-172-31-84-38:~# git clone https://github.com/amitganvir2022/testdata.git
+
+root@ip-172-31-84-38:~# mkdir java-app
+root@ip-172-31-84-38:~# cp testdata/docker-java-image/hello.jar java-app/
+root@ip-172-31-84-38:~/java-app# ls -l
+root@ip-172-31-84-38:~/java-app# vim Dockerfile
+FROM anapsix/alpine-java:8_jdk_nashorn
+MAINTAINER Amit Ganvir
+RUN mkdir /myapp
+COPY hello.jar /myapp/app.jar
+CMD ["java", "-jar", "/myapp/app.jar"]
+
+:wq
+
+root@ip-172-31-84-38:~/java-app# docker build -t "java-app:v1" .
+root@ip-172-31-84-38:~/java-app# docker images
+root@ip-172-31-84-38:~/java-app# docker run -itd --name app1 -p 9000:8080 java-app:v1
+
+root@ip-172-31-84-38:~/java-app# curl localhost:9000;echo
+Hello World, This is Gradle build java application without hardcoding server port
+root@ip-172-31-84-38:~/java-app# docker logs app1
+
+
+#### to remove docker images
+root@ip-172-31-84-38:~/java-app# docker rmi java-app:v1 21abe91b4321
+
+##### docker image creation from ENTRYPOINT
+
+root@ip-172-31-84-38:~/java-app# cd ../testdata/docker-java-image/
+root@ip-172-31-84-38:~/testdata/docker-java-image# docker build . -t "java:v2"
+root@ip-172-31-84-38:~/testdata/docker-java-image# docker run -itd --name app3 -p 9002:8080 java:v2
+root@ip-172-31-84-38:~/testdata/docker-java-image# docker ps
+root@ip-172-31-84-38:~/testdata/docker-java-image# curl localhost:9002;echo
+Hello World, This is Gradle build java application without hardcoding server port
+root@ip-172-31-84-38:~/testdata/docker-java-image#
+
+
