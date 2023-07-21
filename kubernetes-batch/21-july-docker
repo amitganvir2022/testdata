@@ -1,0 +1,54 @@
+
+
+
+root@ip-172-31-84-221:~# docker pull ghcr.io/mlflow/mlflow:v2.1.1
+root@ip-172-31-84-221:~# docker pull bitnami/mariadb:latest
+
+
+root@ip-172-31-84-221:~# docker run -itd -p 3306:3306 --name mariadb -e MARIADB_ROOT_PASSWORD=1234 bitnami/mariadb:latest
+root@ip-172-31-84-221:~# docker exec -it mariadb bash
+I have no name!@6cf78ab9ff26:/$ mysql -uroot -p1234
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| test               |
++--------------------+
+5 rows in set (0.001 sec)
+
+MariaDB [(none)]> exit
+I have no name!@6cf78ab9ff26:/$ hostname -i
+172.17.0.2
+I have no name!@6cf78ab9ff26:/$ exit
+
+root@ip-172-31-84-221:~# docker exec -it mariadb mysql -uroot -p1234
+MariaDB [(none)]> exit
+
+
+root@ip-172-31-84-221:~# docker inspect mariadb
+root@ip-172-31-84-221:~# docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb
+172.17.0.2
+root@ip-172-31-84-221:~#
+
+root@ip-172-31-84-221:~# docker run -itd -p 5100:5100 -v /var/mm:/var/mm --name mlflow ghcr.io/mlflow/mlflow:v2.1.1
+
+root@ip-172-31-84-221:~# docker exec -it mlflow bash
+
+root@16a009886535:/# mlflow server --host 0.0.0.0 -p 5100 --backend-store-uri mysql+pymysql://root:1234@172.17.0.2:3306/test --default-artifact-root /var/mm/mlflow/artifacts &
+root@16a009886535:/# exit
+root@ip-172-31-84-221:~#
+
+#################### How to enable Remote access to your MariaDB/MySQL database 
+https://webdock.io/en/docs/how-guides/database-guides/how-enable-remote-access-your-mariadbmysql-database
+
+root@ip-172-31-84-221:~# docker exec -it mariadb mysql -uroot -p1234
+MariaDB [(none)]> GRANT ALL ON test.* to 'root'@'172.17.0.' IDENTIFIED BY '1234' WITH GRANT OPTION;
+MariaDB [(none)]>  FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.069 sec)
+MariaDB [(none)]> exit;
+
+
