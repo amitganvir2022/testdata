@@ -37,7 +37,7 @@ root@ip-172-31-84-221:~#
 root@ip-172-31-84-221:~# docker run -itd -p 5100:5100 -v /var/mm:/var/mm --name mlflow ghcr.io/mlflow/mlflow:v2.1.1
 
 root@ip-172-31-84-221:~# docker exec -it mlflow bash
-
+root@16a009886535:/# pip install pymysql
 root@16a009886535:/# mlflow server --host 0.0.0.0 -p 5100 --backend-store-uri mysql+pymysql://root:1234@172.17.0.2:3306/test --default-artifact-root /var/mm/mlflow/artifacts &
 root@16a009886535:/# exit
 root@ip-172-31-84-221:~#
