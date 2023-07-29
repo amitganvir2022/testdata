@@ -79,12 +79,12 @@ root@ip-172-31-85-3:~# vim bob.yaml
 apiVersion: v1
 kind: Pod
 metadata:
- name: amit
+ name: bob
  labels:
-   app: amit
+   app: bob
 spec:
  containers:
- - name: amit
+ - name: bob
    image: nginx:latest
 root@ip-172-31-85-3:~#
 
@@ -112,13 +112,13 @@ root@ip-172-31-85-3:~# vim pod1.yaml
 apiVersion: v1
 kind: Pod
 metadata:
- name: amit
+ name: bob
  labels:
-   app: amit
+   app: bob
    type: fe
 spec:
  containers:
- - name: amit
+ - name: bob
    image: nginx:latest
 root@ip-172-31-85-3:~#
 
