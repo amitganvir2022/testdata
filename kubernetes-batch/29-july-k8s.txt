@@ -1,0 +1,168 @@
+
+
+root@ip-172-31-82-152:~# apt-get install docker.io -y
+
+root@ip-172-31-82-152:~# systemctl stop docker
+
+root@ip-172-31-82-152:~# vim /usr/lib/systemd/system/docker.service
+#ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
+
+:wq
+
+root@ip-172-31-82-152:~# systemctl restart docker
+root@ip-172-31-82-152:~# systemctl start docker
+
+#### Solution for below error
+"Failed to run kubelet" err="failed to run Kubelet: misconfiguration: kubelet cgroup driver: \"cgroupfs\" is different from docker cgroup driver: \"systemd\""
+
+
+root@ip-172-31-82-152:~# journalctl -u kubelet -f
+root@ip-172-31-82-152:~# rm -rf /etc/kubernetes/kubelet.conf /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/pki/ca.crt
+
+root@ip-172-31-82-152:~# vim /etc/default/kubelet
+KUBELET_EXTRA_ARGS=--cgroup-driver=systemd
+
+:wq
+
+root@ip-172-31-82-152:~# kubeadm init phase kubelet-start
+root@ip-172-31-82-152:~# kubeadm join IP:6443 --token <YOURTOKEN> --discovery-token-ca-cert-hash sha256:blblblbl
+==============================
+
+
+root@ip-172-31-85-3:~# kubectl api-resources
+root@ip-172-31-85-3:~# kubectl api-versions
+
+----------------------------
+apiVersion:
+kind:
+metadata:
+spec:
+-----------------------
+## docker run -itd --name amit -p 8080:80 nginx:latest
+
+root@ip-172-31-85-3:~# kubectl run sumit --image=nginx:latest
+pod/sumit created
+root@ip-172-31-85-3:~#
+------------------- ## lets create pod mainfeast file
+root@ip-172-31-85-3:~# cat pod1.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+ name: amit
+ labels:
+   app: amit
+   type: fe
+spec:
+ containers:
+ - name: amit
+   image: nginx:latest
+
+root@ip-172-31-85-3:~#
+
+root@ip-172-31-85-3:~# kubectl create -f pod1.yaml
+pod/amit created
+root@ip-172-31-85-3:~#
+
+root@ip-172-31-85-3:~# kubectl get pod
+NAME   READY   STATUS    RESTARTS   AGE
+amit   1/1     Running   0          35s
+root@ip-172-31-85-3:~#
+
+
+-----------------------
+
+##### how to Create pod sample file using dry-run
+root@ip-172-31-85-3:~# kubectl run bob --image=nginx:latest --dry-run=client -o yaml >  bob.yaml
+root@ip-172-31-85-3:~# vim bob.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+ name: amit
+ labels:
+   app: amit
+spec:
+ containers:
+ - name: amit
+   image: nginx:latest
+root@ip-172-31-85-3:~#
+
+root@ip-172-31-85-3:~# kubectl create -f bob.yaml
+pod/bob created
+root@ip-172-31-85-3:~#
+
+root@ip-172-31-85-3:~# kubectl get po
+NAME    READY   STATUS    RESTARTS   AGE
+amit    1/1     Running   0          20m
+bob     1/1     Running   0          7m59s
+sumit   1/1     Running   0          16m
+root@ip-172-31-85-3:~#
+
+### To show labels of pods
+root@ip-172-31-85-3:~# kubectl get po --show-labels
+NAME    READY   STATUS    RESTARTS   AGE     LABELS
+amit    1/1     Running   0          14m     app=amit,type=fe
+bob     1/1     Running   0          2m20s   app=bob
+sumit   1/1     Running   0          10m     run=sumit
+root@ip-172-31-85-3:~#
+
+##### how to update/apply chnages 
+root@ip-172-31-85-3:~# vim pod1.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+ name: amit
+ labels:
+   app: amit
+   type: fe
+spec:
+ containers:
+ - name: amit
+   image: nginx:latest
+root@ip-172-31-85-3:~#
+
+root@ip-172-31-85-3:~# kubectl get po --show-labels
+NAME    READY   STATUS    RESTARTS   AGE     LABELS
+amit    1/1     Running   0          14m     app=amit,type=fe
+bob     1/1     Running   0          2m20s   app=bob,type=fe
+sumit   1/1     Running   0          10m     run=sumit
+root@ip-172-31-85-3:~#
+
+root@ip-172-31-85-3:~# kubectl apply -f bob.yaml
+Warning: resource pods/bob is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+pod/bob configured
+root@ip-172-31-85-3:~#
+-----------------------
+
+
+------------------- Deleting pods
+
+root@ip-172-31-85-3:~# kubectl get po
+NAME    READY   STATUS    RESTARTS   AGE
+amit    1/1     Running   0          28m
+bob     1/1     Running   0          16m
+nginx   1/1     Running   0          3m51s
+sumit   1/1     Running   0          24m
+root@ip-172-31-85-3:~#
+root@ip-172-31-85-3:~#
+root@ip-172-31-85-3:~# kubectl delete pod nginx
+\pod "nginx" deleted
+root@ip-172-31-85-3:~# kubectl get po
+NAME    READY   STATUS    RESTARTS   AGE
+amit    1/1     Running   0          30m
+bob     1/1     Running   0          17m
+sumit   1/1     Running   0          26m
+root@ip-172-31-85-3:~# kubectl delete pod bob sumit
+pod "bob" deleted
+pod "sumit" deleted
+root@ip-172-31-85-3:~# kubectl get po
+NAME   READY   STATUS    RESTARTS   AGE
+amit   1/1     Running   0          30m
+root@ip-172-31-85-3:~# kubectl delete -f pod1.yaml
+pod "amit" deleted
+root@ip-172-31-85-3:~# kubectl get po
+No resources found in default namespace.
+root@ip-172-31-85-3:~#
+
+------------
