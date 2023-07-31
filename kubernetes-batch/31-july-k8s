@@ -55,7 +55,7 @@ $ kubectl get po nginx -o yaml
 $ kubectl get po nginx -o json
 
 ---------------------------------------------------------------
-## Make changes from a file
+## Make changes from a file instead of edit pod
 
 $ kubectl get po nginx -o yaml > pod3.yaml
 
