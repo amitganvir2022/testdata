@@ -1,0 +1,68 @@
+$ vim pod2.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+:wq
+
+$ kubectl apply -f pod2.yaml
+pod/nginx created
+$
+
+$ kubectl get po
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          11m
+
+### To descirbe app pod
+$ kubectl describe pod nginx
+
+
+
+
+---------------------------------------------------------------
+### To watch pods continiously
+$ kubectl get po -w
+
+$ kubectl run redis --image=redis
+pod/redis created
+
+$ kubectl get po -w
+NAME    READY   STATUS              RESTARTS   AGE
+nginx   1/1     Running             0          17m
+redis   0/1     ContainerCreating   0         
+redis   1/1     Running             0          18s
+---------------------------------------------------------------
+### Edit use to update/modified exising ojects like pod manually
+$ kubectl edit pod nginx
+$ kubectl edit pod redis
+
+$ kubectl get po nginx --show-labels
+$ kubectl get po redis --show-labels
+$ kubectl get po --show-labels
+
+---------------------------------------------------------------
+## To List a single pod in YAML output format
+$ kubectl get po nginx -o yaml
+
+## To List a single pod in JSON output format
+$ kubectl get po nginx -o json
+
+---------------------------------------------------------------
+## Make changes from a file
+
+$ kubectl get po nginx -o yaml > pod3.yaml
+
+## make some changes in a file for updating/modefiying 
+$ vim pod3.yaml
+
+$ kubectl apply -f pod3.yaml 
+$ kubectl get po nginx --show-labels
+---------------------------------------------------------------
+
