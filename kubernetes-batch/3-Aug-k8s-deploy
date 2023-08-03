@@ -1,0 +1,117 @@
+## List all the Objects
+$ kubectl -n default get all
+
+## List all the Objects labels
+$ kubectl -n default get all --show-labels
+
+## List all the Objects with specific labels
+$ kubectl -n default get all -l="app=nginx"
+
+
+## Set labels for pod
+$ kubectl -n default label pod nginx "env=test"
+$ kubectl -n default get pod --show-labels
+
+## Set labels for nodes
+$ kubectl get nodes
+$ kubectl label nodes <Master/Worker Name> "env=test"
+$ kubectl get nodes --show-labels
+
+----------------------------
+
+$ kubectl api-resources |grep Deployment
+
+----------------
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+
+-------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  template:
+   metadata:
+     name: nginx
+     labels:
+       app: nginx
+   spec:
+     containers:
+     - name: nginx
+       image: nginx:1.14.2
+       ports:
+         - containerPort: 80
+  selector:
+    matchLabels:
+      app: nginx
+
+=========================
+
+$ kubectl create deploy webapp --image=nginx:1.14.2 --replicas=2 --dry-run=client -o yaml
+
+$ kubectl create deploy webapp --image=nginx:1.14.2 --replicas=2
+deployment.apps/webapp created
+
+$ kubectl get deployment
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+webapp   2/2     2            2           2m24s
+
+$ kubectl get replicaset
+NAME                DESIRED   CURRENT   READY   AGE
+webapp-7c6cc4d656   2         2         2       7m14s
+
+
+$ kubectl get pod
+NAME                      READY   STATUS    RESTARTS   AGE
+webapp-7c6cc4d656-hq247   1/1     Running   0          35s
+webapp-7c6cc4d656-vwktt   1/1     Running   0          35s
+
+$ kubectl delete po webapp-7c6cc4d656-hq247 webapp-7c6cc4d656-vwktt
+
+$ kubectl get pod
+$ kubectl get all
+
+========================
+
+$ kubectl create deploy nginx --image=nginx:1.14.2 --replicas=2 --dry-run=client -o yaml > nginx-deploy.yaml
+$ vim nginx-deploy.yaml
+
+$ kubectl -n default create -f nginx-deploy.yaml
+deployment.apps/nginx created
+
+$ kubectl get deploy
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+nginx    3/3     3            3           4m11s
+webapp   2/2     2            2           14m
+
+$ kubectl get all
+
+$ kubectl edit deploy nginx
+
+$ kubectl get deploy
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+nginx    1/1     1            1           4m59s
+webapp   2/2     2            2           15m
+
+
+$ kubectl scale deploy nginx  --replicas=2
+$ kubectl get deploy
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+nginx    2/2     2            2           10m
+webapp   2/2     2            2           20m
+
+
