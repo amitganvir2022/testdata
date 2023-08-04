@@ -1,0 +1,229 @@
+amit@pooja-PC MINGW64 ~
+$ kubectl create ns gcp-dev
+namespace/gcp-dev created
+
+amit@pooja-PC MINGW64 ~
+$ kubectl get ns
+NAME              STATUS   AGE
+default           Active   5d19h
+gcp-dev           Active   4s
+kube-node-lease   Active   5d19h
+kube-public       Active   5d19h
+kube-system       Active   5d19h
+----
+
+$ kubectl get ns gcp-dev -o yaml > ns.yaml
+
+$ cat ns.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: gcp-test
+  name: gcp-test
+
+amit@pooja-PC MINGW64 ~/dev
+$ kubectl create -f ns.yaml
+namespace/gcp-test created
+
+amit@pooja-PC MINGW64 ~/dev
+$ kubectl get ns
+NAME              STATUS   AGE
+default           Active   5d19h
+gcp-dev           Active   3m10s
+gcp-test          Active   8s
+kube-node-lease   Active   5d19h
+kube-public       Active   5d19h
+kube-system       Active   5d19h
+
+## create own file or use kubectl create deploy cmd
+$ kubectl create deploy nginx --image=nginx:1.14.2 --replicas=2 --dry-run=client -o yaml > nginx-deploy2.yaml
+
+OR
+## we can also specify namespace name inside the yaml file.
+$ cat nginx-deploy2.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+  namespace: gcp-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx:1.14.2
+        name: nginx
+
+
+$ kubectl -n gcp-dev create -f nginx-deploy2.yaml
+deployment.apps/nginx created
+
+$ kubectl -n gcp-dev run webapp --image=nginx
+
+$ kubectl -n gcp-dev get deploy
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+nginx   1/1     1            1           2m40s
+
+$ kubectl -n gcp-dev get po
+NAME                     READY   STATUS    RESTARTS   AGE
+nginx-57d4cf5785-8g7k2   1/1     Running   0          5m2s
+webapp                   1/1     Running   0          8m39s
+
+
+$ kubectl -n gcp-dev delete deploy nginx
+deployment.apps "nginx" deleted
+OR
+$ kubectl -n gcp-dev delete -f nginx-deploy2.yaml
+deployment.apps "nginx" deleted
+==========================================
+
+######### Sidecar container ############
+
+## Below example will fail sidecar container.
+$ cat nginx-deploy2.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+  namespace: gcp-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+      - name: nginx2
+        image: nginx:1.14.2
+
+$ kubectl -n gcp-dev get po
+NAME                     READY   STATUS             RESTARTS      AGE
+nginx-6d7cc7f64b-lbvxp   1/2     CrashLoopBackOff   5 (31s ago)   3m26s
+
+$ kubectl -n gcp-dev logs nginx-6d7cc7f64b-lbvxp -c nginx
+
+## We have a single pod with two container. The first container nginx 
+## will successed and expose nginx container port 80 in same pod. But nginx2 container
+## will fail due to nginx2 container 80 port was already exposed with nginx in same pod.
+$ kubectl -n gcp-dev logs nginx-6d7cc7f64b-lbvxp -c nginx2
+2023/08/04 08:43:49 [emerg] 1#1: bind() to 0.0.0.0:80 failed (98: Address already in use)
+
+$ kubectl delete -f nginx-deploy2.yaml
+
+--------------------------------------------------------
+Note:
+## sidecar container port should be different in Dockerimage or execution should be diff.
+
+
+$ kubectl create deploy hello --image=busybox --replicas=1 --dry-run=client -o yaml > sidecar.yaml
+OR create your own
+
+$ cat sidecar.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello
+  name: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - name: app1
+        image: busybox
+        args: ["sleep", "1d"]
+      - name: app2
+        image: busybox
+        args: ["sleep", "1d"]
+
+$ kubectl -n gcp-dev create -f sidecar.yaml
+
+$ kubectl -n gcp-dev get po
+NAME                     READY   STATUS              RESTARTS   AGE
+hello-774c4ffdbc-4r47s   0/2     ContainerCreating   0          7s
+
+$ kubectl -n gcp-dev get po
+NAME                     READY   STATUS    RESTARTS   AGE
+hello-774c4ffdbc-4r47s   2/2     Running   0          11s
+$ kubectl -n gcp-dev delete -f sidecar.yaml
+
+------
+$ cat sidecar2.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello
+  name: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - name: app1
+        image: busybox
+        args: ["echo", "this is App1"]
+      - name: app2
+        image: busybox
+        args: ["echo", "this is App2"]
+
+$ kubectl -n gcp-dev create -f sidecar2.yaml
+deployment.apps/hello created
+
+$ kubectl -n gcp-dev get po
+NAME                     READY   STATUS      RESTARTS   AGE
+hello-8548b56cb8-p9vzd   0/2     Completed   0          7s
+
+
+$ kubectl -n gcp-dev logs hello-8548b56cb8-p9vzd -c app1
+OR
+$ kubectl -n gcp-dev logs hello-8548b56cb8-p9vzd app1
+this is App1
+
+$ kubectl -n gcp-dev logs hello-8548b56cb8-p9vzd app2
+OR
+$ kubectl -n gcp-dev logs hello-8548b56cb8-p9vzd -c app1
+this is App1
+
+
+
+
+
+--------------------------------------------------------
+
+
+
+
+
+
+
