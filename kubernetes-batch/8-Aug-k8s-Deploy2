@@ -14,13 +14,15 @@ kube-system       Active   5d19h
 
 $ kubectl get ns gcp-dev -o yaml > ns.yaml
 
-$ cat ns.yaml
+$ vim ns.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   labels:
     kubernetes.io/metadata.name: gcp-test
   name: gcp-test
+
+:wq
 
 amit@pooja-PC MINGW64 ~/dev
 $ kubectl create -f ns.yaml
@@ -41,7 +43,7 @@ $ kubectl create deploy nginx --image=nginx:1.14.2 --replicas=2 --dry-run=client
 
 OR
 ## we can also specify namespace name inside the yaml file.
-$ cat nginx-deploy2.yaml
+$ vim nginx-deploy2.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,6 +65,7 @@ spec:
       - image: nginx:1.14.2
         name: nginx
 
+:wq
 
 $ kubectl -n gcp-dev create -f nginx-deploy2.yaml
 deployment.apps/nginx created
@@ -89,7 +92,7 @@ deployment.apps "nginx" deleted
 ######### Sidecar container ############
 
 ## Below example will fail sidecar container.
-$ cat nginx-deploy2.yaml
+$ vim nginx-deploy2.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -113,6 +116,8 @@ spec:
       - name: nginx2
         image: nginx:1.14.2
 
+:wq
+
 $ kubectl -n gcp-dev get po
 NAME                     READY   STATUS             RESTARTS      AGE
 nginx-6d7cc7f64b-lbvxp   1/2     CrashLoopBackOff   5 (31s ago)   3m26s
@@ -135,7 +140,7 @@ Note:
 $ kubectl create deploy hello --image=busybox --replicas=1 --dry-run=client -o yaml > sidecar.yaml
 OR create your own
 
-$ cat sidecar.yaml
+$ vim sidecar.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -160,6 +165,8 @@ spec:
         image: busybox
         args: ["sleep", "1d"]
 
+:wq
+
 $ kubectl -n gcp-dev create -f sidecar.yaml
 
 $ kubectl -n gcp-dev get po
@@ -172,7 +179,7 @@ hello-774c4ffdbc-4r47s   2/2     Running   0          11s
 $ kubectl -n gcp-dev delete -f sidecar.yaml
 
 ------
-$ cat sidecar2.yaml
+$ vim sidecar2.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -197,6 +204,8 @@ spec:
         image: busybox
         args: ["echo", "this is App2"]
 
+:wq
+
 $ kubectl -n gcp-dev create -f sidecar2.yaml
 deployment.apps/hello created
 
@@ -215,15 +224,4 @@ OR
 $ kubectl -n gcp-dev logs hello-8548b56cb8-p9vzd -c app1
 this is App1
 
-
-
-
-
 --------------------------------------------------------
-
-
-
-
-
-
-
