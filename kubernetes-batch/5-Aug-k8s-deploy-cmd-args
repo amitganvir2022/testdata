@@ -1,0 +1,161 @@
+$ cat sidecarnginx.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx1
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+      - name: tomcat
+        image: tomcat:9.0
+        ports:
+        - containerPort: 8080
+
+
+$ kubectl -n gcp-dev get po
+NAME                                READY   STATUS    RESTARTS   AGE
+nginx-deployment-5785dc74bd-jbm5f   2/2     Running   0          8m45s
+
+
+$ kubectl -n gcp-dev describe pod nginx-deployment-5785dc74bd-jbm5f
+
+## it will display logs for first container like here it is nginx1
+$ kubectl -n gcp-dev logs nginx-deployment-5785dc74bd-jbm5f
+OR
+$ kubectl -n gcp-dev logs nginx-deployment-5785dc74bd-jbm5f nginx1
+$ kubectl -n gcp-dev logs nginx-deployment-5785dc74bd-jbm5f -c nginx1
+$ kubectl -n gcp-dev logs nginx-deployment-5785dc74bd-jbm5f -c tomcat
+
+---------------------
+Refer: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+
+$ cat deploy1.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello
+  name: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - image: busybox
+        name: busybox
+        args: ["echo", "hello"]
+
+$ kubectl -n gcp-dev create -f deploy1.yaml
+deployment.apps/hello created
+
+
+$ kubectl -n gcp-dev get po
+NAME                                READY   STATUS      RESTARTS      AGE
+hello-647c854d9c-9pplp              0/1     Completed   2 (25s ago)   33s
+
+---------------------
+
+$ cat deploy1.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello
+  name: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - image: busybox
+        name: busybox
+        args: ["sleep", "1d"]
+
+$ kubectl -n gcp-dev apply -f deploy1.yaml
+Warning: resource deployments/hello is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+deployment.apps/hello configured
+
+$ kubectl -n gcp-dev get po  -w
+NAME                                READY   STATUS    RESTARTS   AGE
+hello-9f598f866-n5kj9               1/1     Running   0          7s
+-----
+$ cat deploy1.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello
+  name: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - image: busybox
+        name: busybox
+        command: ["echo"]
+        args: ["hello", "Amit"]
+
+$ kubectl -n gcp-dev apply -f deploy1.yaml
+
+$ kubectl -n gcp-dev logs hello-6d49d876d9-9tn7q
+hello Amit
+---
+$ cat cmd2.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: command-demo
+  labels:
+    purpose: demonstrate-command
+spec:
+  containers:
+  - name: command-demo-container
+    image: busybox
+    command: ["printenv"]
+    args: ["HOSTNAME", "KUBERNETES_PORT"]
+  restartPolicy: OnFailure
+
+
+$ kubectl -n gcp-dev create -f cmd2.yaml
+pod/command-demo created
+
+
+$ kubectl -n gcp-dev get po
+NAME                                READY   STATUS             RESTARTS      AGE
+command-demo                        0/1     Completed          0             14s
+
+
+$ kubectl -n gcp-dev logs command-demo
+command-demo
+tcp://10.96.0.1:443
