@@ -1,0 +1,206 @@
+###### restartPolicy ######
+restartPolicy is defined at the same level as all the containers, it applied at the Pod level. We can set it to:
+
+Always: The pod needs to be always running so, every time stops, a new one will be spawned
+OnFailure: Only if the container terminates with a non zero return code, it will be restarted. A container that returns a 0 (success) doesn't need to be restarted
+Never: Do not attempt to restart the container
+
+amit@pooja-PC MINGW64 ~/Desktop/7aug
+$ cat multi-cmd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args: ["echo Hello"]
+  restartPolicy: Always
+
+
+$ kubectl -n dev create -f multi-cmd.yaml
+pod/webapp created
+----
+$ cat multi-cmd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args: ["echo amit ganvir | grep sumit"]
+  restartPolicy: OnFailure
+
+$ kubectl -n dev create -f multi-cmd.yaml
+pod/webapp created
+
+amit@pooja-PC MINGW64 ~/Desktop/7aug
+$ kubectl -n dev get po
+NAME     READY   STATUS             RESTARTS     AGE
+webapp   0/1     CrashLoopBackOff   1 (2s ago)   8s
+
+amit@pooja-PC MINGW64 ~/Desktop/7aug
+$ kubectl -n dev get po
+NAME     READY   STATUS      RESTARTS     AGE
+webapp   0/1     Completed   1 (3s ago)   6s
+
+amit@pooja-PC MINGW64 ~/Desktop/7aug
+$ kubectl -n dev logs -f webapp
+Hello
+
+$ kubectl -n dev get po
+NAME     READY   STATUS             RESTARTS      AGE
+webapp   0/1     CrashLoopBackOff   4 (32s ago)   2m14s
+
+$ kubectl -n dev delete pod webapp
+pod "webapp" deleted
+
+-----
+
+$ kubectl -n dev create -f multi-cmd.yaml
+pod/webapp created
+
+amit@pooja-PC MINGW64 ~/Desktop/7aug
+$ cat multi-cmd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args: ["echo Hello"]
+  restartPolicy: Never
+
+amit@pooja-PC MINGW64 ~/Desktop/7aug
+$ kubectl -n dev get po
+NAME     READY   STATUS      RESTARTS   AGE
+webapp   0/1     Completed   0          12s
+
+
+$ kubectl -n dev delete pod webapp
+pod "webapp" deleted
+---------
+
+$ cat multi-cmd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args: ["echoo Hello"]
+  restartPolicy: Never
+
+
+$ kubectl -n dev create -f multi-cmd.yaml
+pod/webapp created
+
+
+$ kubectl -n dev get po
+NAME     READY   STATUS             RESTARTS      AGE
+webapp   0/1     CrashLoopBackOff   3 (34s ago)   82s
+
+$ kubectl -n dev delete pod webapp
+pod "webapp" deleted
+----
+$ cat multi-cmd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args: ["date;hostname;echo hi"]
+  restartPolicy: Never
+
+
+$ kubectl -n dev create -f multi-cmd.yaml
+pod/webapp created
+
+$ kubectl -n dev get po
+NAME     READY   STATUS      RESTARTS   AGE
+webapp   0/1     Completed   0          7s
+
+$ kubectl -n dev logs webapp
+Mon Aug  7 03:36:00 UTC 2023
+webapp
+hi
+
+$ kubectl -n dev delete pod webapp
+pod "webapp" deleted
+
+$ cat multi-cmd.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args:
+      - date;
+        hostname;
+        echo hi;
+  restartPolicy: Never
+
+
+------
+--pods---
+Pod
+Deployment
+Job
+StatefulSet
+DaemonSet
+
+-- others --
+ConfigMap
+Ingress
+StorageClass
+Secrets
+
+-----------
+Imerative
+kubectl run
+kubectl expose
+kubectl replace 
+kubectl create -f file.yaml
+kubectl delete -f file.yaml
+kubectl edit 
+kubectl scale 
+kubectl set 
+
+== Declarative ===
+kubectl apply -f file.yaml
+Mainfeast/Definication file
+update last-applied-configuration
+
+
+
