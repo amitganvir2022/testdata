@@ -1,0 +1,266 @@
+a=10
+
+key: a
+value: 10
+
+DB=redis
+---
+##### env #####
+Define an environment variable for a container
+When you create a Pod, you can set environment variables for the containers that run in the Pod. To set environment variables, include the env or envFrom field in the configuration file.
+
+The env and envFrom fields have different effects.
+
+env
+allows you to set environment variables for a container, specifying a value directly for each variable that you name.
+envFrom
+allows you to set environment variables for a container by referencing either a ConfigMap or a Secret. When you use envFrom, all the key-value pairs in the referenced ConfigMap or Secret are set as environment variables for the container. You can also specify a common prefix string.
+
+$ cat nginx-deploy-env.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB
+          value: "mariadb"
+        - name: DB_HOST
+          value: "192.168.1.1"
+
+
+$ kubectl create -f nginx-deploy-env.yaml
+deployment.apps/nginx-deployment created
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get deploy
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-deployment   1/1     1            1           7s
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get po
+NAME                                READY   STATUS    RESTARTS   AGE
+nginx-deployment-867788dbf5-n8sbq   1/1     Running   0          11s
+
+$ kubectl exec -it nginx-deployment-867788dbf5-n8sbq -- env
+
+
+-----
+$ cat env-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-cm
+data:
+  db_host: 192.168.2.1
+  db_user: test
+  db_name: mariadb
+
+$ kubectl create -f env-cm.yaml
+configmap/db-cm created
+
+$ kubectl get configmap
+NAME               DATA   AGE
+db-cm              3      25s
+kube-root-ca.crt   1      22d
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get cm
+NAME               DATA   AGE
+db-cm              3      30s
+kube-root-ca.crt   1      22d
+
+$ kubectl describe cm db-cm
+
+$ kubectl get cm db-cm -o yaml
+
+$ cat nginx-deploy-cm.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB
+          valueFrom:
+            configMapKeyRef:
+              name: db-cm
+              key: db_name
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: db-cm
+              key: db_host
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db-cm
+              key: db_user
+
+$ kubectl delete -f nginx-deploy-env.yaml
+deployment.apps "nginx-deployment" deleted
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl create -f nginx-deploy-cm.yaml
+deployment.apps/nginx-deployment created
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get po
+NAME                               READY   STATUS    RESTARTS   AGE
+nginx-deployment-5fdf8bd96-jmpjv   1/1     Running   0          8s
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl exec -it nginx-deployment-5fdf8bd96-jmpjv -- env |grep DB
+Unable to use a TTY - input is not a terminal or the right kind of file
+DB_USER=test
+DB=mariadb
+DB_HOST=192.168.2.1
+
+
+----------------------
+$ cat env-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-cm
+data:
+  db_host: 192.168.3.1
+  db_user: test
+  db_name: mariadb
+
+OR
+$ kubectl edit cm db-cm
+
+$ kubectl exec -it nginx-deployment-5fdf8bd96-jmpjv -- env |grep DB
+Unable to use a TTY - input is not a terminal or the right kind of file
+DB_USER=test
+DB=mariadb
+DB_HOST=192.168.2.1
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl delete po nginx-deployment-5fdf8bd96-jmpjv
+pod "nginx-deployment-5fdf8bd96-jmpjv" deleted
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get po
+NAME                               READY   STATUS    RESTARTS   AGE
+nginx-deployment-5fdf8bd96-vhr7t   1/1     Running   0          14s
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl exec -it nginx-deployment-5fdf8bd96-vhr7t -- env |grep DB
+Unable to use a TTY - input is not a terminal or the right kind of file
+DB=mariadb
+DB_HOST=192.168.3.1
+DB_USER=test
+
+-----
+$ kubectl get cm db-cm -o yaml > tmp-cm.yaml
+
+amit@pooja-PC MINGW64 ~/config
+$ vim tmp-cm.yaml
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl apply -f tmp-cm.yaml
+configmap/db-cm configured
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get cm db-cm -o yaml
+
+----------------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args: ["echo ${MESSAGE}"]
+    env:
+    - name: MESSAGE
+      value: "AMIT GANVIR"
+
+$ kubectl create -f pod.yaml
+pod/webapp created
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get po
+NAME                               READY   STATUS              RESTARTS   AGE
+nginx-deployment-5fdf8bd96-mgmv9   1/1     Running             0          10m
+webapp                             0/1     ContainerCreating   0          3s
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl logs -f webapp
+AMIT GANVIR
+
+$ kubectl delete -f pod.yaml
+pod "webapp" deleted
+
+$ cat pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp
+  name: webapp
+spec:
+  containers:
+  - image: busybox
+    name: webapp
+    command: ["/bin/sh","-c"]
+    args: ["echo ${MESSAGE} ${DB_HOSTNAME}"]
+    env:
+    - name: MESSAGE
+      value: "AMIT GANVIR"
+    - name: DB_HOSTNAME
+      valueFrom:
+        configMapKeyRef:
+          name: db-cm
+          key: db_host
+
+$ kubectl create -f pod.yaml
+pod/webapp created
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl get po
+NAME                               READY   STATUS      RESTARTS   AGE
+nginx-deployment-5fdf8bd96-mgmv9   1/1     Running     0          15m
+webapp                             0/1     Completed   0          5s
+
+amit@pooja-PC MINGW64 ~/config
+$ kubectl logs webapp
+AMIT GANVIR 192.168.4.1
+
+amit@pooja-PC MINGW64 ~/config
+$
