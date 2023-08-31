@@ -1,0 +1,188 @@
+https://kubernetes.io/docs/concepts/policy/resource-quotas/
+
+
+$ cat object-counts.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: object-counts
+spec:
+  hard:
+    configmaps: "3"
+    persistentvolumeclaims: "4"
+    pods: "2"
+    replicationcontrollers: "20"
+    secrets: "3"
+    services: "5"
+    services.loadbalancers: "2"
+
+$ kubectl -n dev create -f object-counts.yaml
+
+$ kubectl -n dev describe quota object-counts
+Name:                   object-counts
+Namespace:              dev
+Resource                Used  Hard
+--------                ----  ----
+configmaps              1     3
+persistentvolumeclaims  1     4
+pods                    1     2
+replicationcontrollers  0     20
+secrets                 0     3
+services                1     5
+services.loadbalancers  0     2
+
+$ cat deployment-testquota.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-quota-demo
+spec:
+  selector:
+    matchLabels:
+      purpose: quota-demo
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        purpose: quota-demo
+    spec:
+      containers:
+      - name: pod-quota-demo
+        image: nginx
+
+
+$ kubectl -n dev create -f deployment-testquota.yaml
+
+
+$ kubectl -n dev get deploy
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+pod-quota-demo   2/3     2            2           10s
+
+$ kubectl -n dev get po
+NAME                              READY   STATUS    RESTARTS   AGE
+pod-quota-demo-6894bd9c68-42hkt   1/1     Running   0          32s
+pod-quota-demo-6894bd9c68-jw5wl   1/1     Running   0          32s
+
+
+-------------------------
+$ kubectl create ns test
+
+
+$ cat compute-resources.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-resources
+spec:
+  hard:
+    requests.cpu: "0.1"
+    requests.memory: 50Mi
+    limits.cpu: "0.3"
+    limits.memory: 200Mi
+
+$ kubectl -n test create -f compute-resources.yaml
+
+$ kubectl -n test get quota
+
+$ kubectl -n test describe quota compute-resources
+Name:            compute-resources
+Namespace:       test
+Resource         Used  Hard
+--------         ----  ----
+limits.cpu       0     300m
+limits.memory    0     200Mi
+requests.cpu     0     100m
+requests.memory  0     50Mi
+
+## lets try to fail pod
+
+$ cat pod1.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    resources:
+      requests:
+        memory: "40Mi"
+        cpu: "20m"
+
+
+$ kubectl -n test create -f pod1.yaml
+Error from server (Forbidden): error when creating "pod1.yaml": pods "nginx" is forbidden: faile
+d quota: compute-resources: must specify limits.cpu for: nginx; limits.memory for: nginx
+
+
+
+$ cat pod2.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    resources:
+      requests:
+        memory: "100Mi"
+        cpu: "200m"
+      limits:
+        memory: "300Mi"
+        cpu: "400m"
+
+
+$ kubectl -n test create -f pod2.yaml
+Error from server (Forbidden): error when creating "pod2.yaml": pods "nginx" is forbidden: excee
+ded quota: compute-resources, requested: limits.cpu=400m,limits.memory=300Mi,requests.cpu=200m,r
+equests.memory=100Mi, used: limits.cpu=0,limits.memory=0,requests.cpu=0,requests.memory=0, limit
+ed: limits.cpu=300m,limits.memory=200Mi,requests.cpu=100m,requests.memory=50Mi
+
+
+$ cat pod3.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    resources:
+      requests:
+        memory: "40Mi"
+        cpu: "20m"
+      limits:
+        memory: "100Mi"
+        cpu: "110m"
+
+amit@amit-PC MINGW64 ~/k8s/quota
+$ kubectl -n test create -f pod3.yaml
+pod/nginx created
+
+$ kubectl -n test get po
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          37s
+
+
+$ kubectl -n test describe quota compute-resources
+Name:            compute-resources
+Namespace:       test
+Resource         Used   Hard
+--------         ----   ----
+limits.cpu       110m   300m
+limits.memory    100Mi  200Mi
+requests.cpu     20m    100m
+requests.memory  40Mi   50Mi
+
+
+
