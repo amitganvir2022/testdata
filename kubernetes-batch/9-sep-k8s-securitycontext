@@ -1,0 +1,45 @@
+$ kubectl -n dev run redis --image=redis --dry-run=client -o yaml > redis-security.yaml   
+
+$ vi redis-security.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: redis
+  name: redis
+  namespace: dev
+spec:
+  containers:
+  - image: redis
+    name: redis
+  securityContext:
+    runAsUser: 3000
+    runAsGroup: 3000
+    fsGroup: 3001
+:wq
+
+$ kubectl create -f redis-security.yaml
+
+$ kubectl -n dev get po
+NAME    READY   STATUS    RESTARTS       AGE
+redis   1/1     Running   1 (116m ago)   4h27m
+
+$ kubectl -n dev exec -it redis -- id
+uid=3000 gid=3000 groups=3000,3001
+
+OR
+$ kubectl -n dev exec -it redis -- bash
+I have no name!@redis:/data$ id
+uid=3000 gid=3000 groups=3000,3001
+I have no name!@redis:/data$ whoami
+whoami: cannot find name for user ID 3000
+I have no name!@redis:/data$ exit
+$
+
+$ kubectl -n dev delete -f redis-security.yaml
+pod "redis" deleted
+
+
+
+
+
