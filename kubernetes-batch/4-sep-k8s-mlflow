@@ -1,0 +1,139 @@
+$ ~/bin/kubectl -n test create deployment mariadb --image=mariadb:latest --dry-run=client -o yaml > maraidb-deploy.yaml
+
+
+$ cat maraidb-deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mariadb
+  name: mariadb
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - image: bitnami/mariadb:latest
+        name: mariadb
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          value: "1234"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: test
+  labels:
+    app: mariadb-svc
+  name: maraidb-svc
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  type: NodePort
+  selector:
+    app: mariadb
+
+$ kubectl -n test create -f maraidb-deploy.yaml
+
+## To restart pod
+$ kubectl -n test rollout restart deploy mariadb
+
+$ kubectl -n test get po
+NAME                       READY   STATUS              RESTARTS      AGE
+mariadb-69c4596767-vq62z   1/1     Running             0             74m
+
+
+$ kubectl -n test exec -it mariadb-69c4596767-vq62z -- mysql -u root -p1234
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| test               |
++--------------------+
+5 rows in set (0.265 sec)
+
+MariaDB [(none)]> exit;
+Bye
+
+
+$ kubectl -n test exec -it mariadb-69c4596767-vq62z -- hostname -i
+10.244.0.84
+
+
+$ cat mlflow-deploy-cmd.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mlflow
+  name: mlflow
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - image: ghcr.io/mlflow/mlflow:v2.1.1
+        name: mlflow
+        command: ["/bin/sh","-c"]
+        args: ["pip install pymysql; mlflow server --host 0.0.0.0 -p 5100 --backend-store-uri mysql+pymysql://root:${DB_PASSWORD}@${DB_IP}:3306/test --default-artifact-root file:///var/mm/mlflow/artifacts"]
+        env:
+        - name: DB_PASSWORD
+          value: "1234"
+        - name: DB_IP
+          value: "10.244.0.84"
+
+
+$ kubectl -n test apply -f mlflow-deploy-cmd.yaml
+
+
+$ kubectl -n test logs -f mlflow-885d97bc4-crdnm
+
+$ cat mlflow-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: test
+  labels:
+    app: mlflow-svc
+  name: mlflow-svc
+spec:
+  ports:
+  - port: 5100
+    protocol: TCP
+    targetPort: 5100
+  type: NodePort
+  selector:
+    app: mlflow
+
+$ kubectl create -f mlflow-svc.yaml
+
+$ kubectl -n test get svc
+NAME          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+maraidb-svc   NodePort   10.110.79.186   <none>        3306:31868/TCP   105m
+mlflow-svc    NodePort   10.102.119.88   <none>        5100:32214/TCP   31s
+
+
+Check on brwoser
+http://<Node/EC2 IP>:32214
+
+
