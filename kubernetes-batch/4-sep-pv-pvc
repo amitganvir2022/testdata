@@ -1,0 +1,74 @@
+$ cat cat pv1.yaml
+cat: cat: No such file or directory
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/sda1/mydata"
+
+$ kubectl -n dev create -f pv1.yaml
+
+$ kubectl -n dev get pv
+NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM    STORAGECLASS   REASON
+AGE
+my-local   10Gi       RWO            Retain           Bound    dev/db   manual
+46h
+
+$ cat pvc1.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db
+  namespace: dev
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+$ kubectl -n dev create -f pvc1.yaml
+
+$ kubectl -n dev get pvc
+NAME        STATUS    VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS       AGE
+db          Bound     my-local   10Gi       RWO            manual             46h
+
+$ cat db-pvc.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: db
+  name: db
+  namespace: dev
+spec:
+  volumes:
+  - name: pvc1
+    persistentVolumeClaim:
+      claimName: db
+  containers:
+  - image: nginx
+    name: db
+    volumeMounts:
+    - mountPath: /opt/data
+      name: pvc1
+
+$ kubectl -n dev create -f db-pvc.yaml
+pod/db created
+
+$ kubectl  -n dev get po
+NAME   READY   STATUS    RESTARTS   AGE
+db     1/1     Running   0          16s
+
+$ kubectl  -n dev exec -it db -- df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        17G  2.2G   14G  14% /opt/data
+
+
