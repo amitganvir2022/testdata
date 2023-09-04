@@ -139,4 +139,6 @@ mlflow-svc    NodePort   10.102.119.88   <none>        5100:32214/TCP   31s
 Check on brwoser
 http://<Node/EC2 IP>:32214
 
+$ kubectl -n test delete -f mlflow-deploy-cmd.yaml -f mlflow-svc.yaml -f maraidb-deploy.yaml
+
 
