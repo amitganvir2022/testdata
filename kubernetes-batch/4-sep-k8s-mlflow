@@ -1,4 +1,4 @@
-$ ~/bin/kubectl -n test create deployment mariadb --image=mariadb:latest --dry-run=client -o yaml > maraidb-deploy.yaml
+$ kubectl -n test create deployment mariadb --image=mariadb:latest --dry-run=client -o yaml > maraidb-deploy.yaml
 
 
 $ cat maraidb-deploy.yaml
@@ -71,6 +71,9 @@ Bye
 
 $ kubectl -n test exec -it mariadb-69c4596767-vq62z -- hostname -i
 10.244.0.84
+
+
+$ kubectl -n test create deployment mlflow --image=ghcr.io/mlflow/mlflow:v2.1.1 --dry-run=client -o yaml > mlflow-deploy-cmd.yaml
 
 
 $ cat mlflow-deploy-cmd.yaml
