@@ -54,10 +54,13 @@ net.bridge.bridge-nf-call-iptables  = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 net.ipv4.ip_forward                 = 1
 EOF
-
 sudo sysctl --system
 sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
+
+sudo echo 'Environment="cgroup-driver=systemd/cgroup-driver=cgroupfs"' >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sudo systemctl daemon-reload
 systemctl restart kubelet.service
+
 ## create token to join workernode. execute below commands output on worker side.
 kubeadm token create --print-join-command
 
@@ -70,3 +73,5 @@ For example: ##kubeadm join 172.31.22.254:6443 --token t5wam7.35gqolngm80zf9di -
 Step6: ---------------------------------------------------------------------------------------------------------------------------------
 # On Master Side, now execute below command to check cluster nodes.
 kubectl get nodes
+kubectl -n kube-system rollout restart deploy coredns
+systemctl restart kubelet.service
