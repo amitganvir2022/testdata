@@ -133,7 +133,7 @@ RUN mv $TMP_CACHE_DIR/* $TOOLS_BASE_PATH/ \
  && chmod 755 -R $TOOLS_BASE_PATH
 
 ARG RUN_USER="amit"
-ARG RUN_USER_ID="3210"
+ARG RUN_USER_ID="3000"
 RUN useradd -ms /bin/bash -u $RUN_USER_ID $RUN_USER
 # RUN usermod -aG root $RUN_USER
 
