@@ -1,0 +1,208 @@
+$ wget https://raw.githubusercontent.com/zlabjp/kubernetes-scripts/master/force-update-deployment
+$ chmod +x force-update-deployment
+$ ./force-update-deployment coredns -n kube-system
+
+$ kubectl run busybox --image=busybox --rm -ti --restart=Never --command -- cat /etc/resolv.conf 
+$ kubectl run busybox --image=busybox --rm -ti --restart=Never --command -- nslookup kubernetes.default.svc.cluster.local
+================== mlflow deployment with existing dockerfile
+
+$ cat maraidb.yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mariadb
+  name: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - image: bitnami/mariadb:latest
+        name: mariadb
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          value: "1234"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mariadb-svc
+  name: mariadb-svc
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  type: NodePort
+  selector:
+    app: mariadb
+
+$ cat mlflow.yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mlflow
+  name: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - image: ghcr.io/mlflow/mlflow:v2.1.1
+        name: mlflow
+        command: ["/bin/sh","-c"]
+        args: ["pip install pymysql; mlflow server --host 0.0.0.0 -p 5100 --backend-store-uri mysql+pymysql://root:${DB_PASSWORD}@${DB_IP}:3306/test --default-artifact-root file:///var/mm/mlflow/artifacts"]
+        env:
+        - name: DB_PASSWORD
+          value: "1234"
+        - name: DB_IP
+          value: "mariadb-svc.default.svc.cluster.local"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mlflow-svc
+  name: mlflow-svc
+spec:
+  ports:
+  - port: 5100
+    protocol: TCP
+    targetPort: 5100
+  type: ClusterIP
+  selector:
+    app: mlflow
+
+$ kubectl apply -f maraidb.yaml -f mlflow.yaml
+
+$ kubectl get svc,pod
+NAME                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/kubernetes    ClusterIP   10.96.0.1       <none>        443/TCP          60d
+service/mariadb-svc   NodePort    10.103.123.58   <none>        3306:32550/TCP   48m
+service/mlflow-svc    ClusterIP   10.111.48.211   <none>        5100/TCP         17m
+
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/mariadb-759949b7db-j8nt5   1/1     Running   0          52m
+pod/mlflow-7ccc98c996-pt9dj    1/1     Running   0          7m33s
+
+$ kubectl port-forward mlflow-7ccc98c996-pt9dj 8100:5100
+Forwarding from 127.0.0.1:8100 -> 5100
+Forwarding from [::1]:8100 -> 5100
+
+Browser: localhost:8100
+
+
+================== mlflow deployment with new Docker file
+## Docker entrypoint
+cat entrypoint.sh
+#!/usr/bin/env bash
+# $1 - port
+# $2 - DB
+# $3 - default artifacts location
+mlflow server --host 0.0.0.0 -p $1 --backend-store-uri $2 --default-artifact-root $3
+
+##mlflow Dockerfile
+FROM ghcr.io/mlflow/mlflow:v2.1.1
+
+ENV TOOLS_BASE_PATH="/usr/local/bin"
+
+ARG TMP_CACHE_DIR="/tmp/cache"
+COPY entrypoint.sh $TMP_CACHE_DIR/
+
+RUN set -eux; \
+    apt update && \
+    apt-get update -y
+
+RUN mv $TMP_CACHE_DIR/* $TOOLS_BASE_PATH/ \
+ && pip3 install pymysql \
+ && chmod 755 -R $TOOLS_BASE_PATH
+
+ARG RUN_USER="amit"
+ARG RUN_USER_ID="3210"
+RUN useradd -ms /bin/bash -u $RUN_USER_ID $RUN_USER
+# RUN usermod -aG root $RUN_USER
+
+USER $RUN_USER
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["5000", "/tmp", "/tmp"]
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mlflow
+  name: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - image: amitganvir6/mlflow:v2.1.1
+        name: mlflow
+        args: ["5100", "mysql+pymysql://$DB_USER:${DB_PASSWORD}@${DB_IP}:3306/test", "$ARTIFACTS_PATH"]
+        env:
+        - name: DB_USER
+          value: "root"
+        - name: DB_PASSWORD
+          value: "1234"
+        - name: DB_IP
+          value: "mariadb-svc.default.svc.cluster.local"
+        - name: ARTIFACTS_PATH
+          value: "/var/mlflow/artifacts"
+
+$ docker build . -t amitganvir6/mlflow:v2.1.1
+
+$ cat mlflow2.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mlflow
+  name: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - image: amitganvir6/mlflow:v2.1.1 
+        name: mlflow
+        args: ["5100", "mysql+pymysql://$DB_USER:${DB_PASSWORD}@${DB_IP}:3306/test", "$ARTIFACTS_PATH"]
+        env:
+        - name: DB_USER
+          value: "root"
+        - name: DB_PASSWORD
+          value: "1234"
+        - name: DB_IP
+          value: "mariadb-svc.default.svc.cluster.local"
+        - name: ARTIFACTS_PATH
+          value: "/var/mlflow/artifacts"
+
+
