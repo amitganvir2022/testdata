@@ -101,8 +101,8 @@ pod/mariadb-759949b7db-j8nt5   1/1     Running   0          52m
 pod/mlflow-7ccc98c996-pt9dj    1/1     Running   0          7m33s
 
 $ kubectl port-forward mlflow-7ccc98c996-pt9dj 8100:5100
-Forwarding from 127.0.0.1:8100 -> 5100
-Forwarding from [::1]:8100 -> 5100
+OR
+$ kubectl port-forward service/mlflow-svc 8100:5100
 
 Browser: localhost:8100
 
