@@ -1,0 +1,85 @@
+https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+
+You can use any of the following methods to choose where Kubernetes schedules specific Pods:
+
+nodeSelector field matching against node labels
+Affinity and anti-affinity
+nodeName field
+Pod topology spread constraints
+
+
+root@ip-172-31-14-70:~# kubectl get nodes
+NAME              STATUS   ROLES                  AGE    VERSION
+ip-172-31-14-70   Ready    control-plane,master   119m   v1.21.1
+ip-172-31-15-48   Ready    <none>                 114m   v1.21.1
+ip-172-31-5-29    Ready    <none>                 115m   v1.21.1
+root@ip-172-31-14-70:~#
+
+
+
+root@ip-172-31-14-70:~# cat nignx-nodename.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  nodeName: ip-172-31-15-48
+  containers:
+  - image: nginx
+    name: nginx
+root@ip-172-31-14-70:~#
+
+root@ip-172-31-14-70:~# kubectl create -f nignx-nodename.yaml
+
+------
+root@ip-172-31-14-70:~# kubectl label node ip-172-31-5-29 env=test
+root@ip-172-31-14-70:~# kubectl label node ip-172-31-15-48 env=dev
+
+
+root@ip-172-31-14-70:~# kubectl get nodes --show-labels
+NAME              STATUS   ROLES                  AGE    VERSION   LABELS
+ip-172-31-14-70   Ready    control-plane,master   120m   v1.21.1   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=ip-172-31-14-70,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node-role.kubernetes.io/master=,node.kubernetes.io/exclude-from-external-load-balancers=
+ip-172-31-15-48   Ready    <none>                 115m   v1.21.1   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,env=dev,kubernetes.io/arch=amd64,kubernetes.io/hostname=ip-172-31-15-48,kubernetes.io/os=linux
+ip-172-31-5-29    Ready    <none>                 116m   v1.21.1   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,env=test,kubernetes.io/arch=amd64,kubernetes.io/hostname=ip-172-31-5-29,kubernetes.io/os=linux
+root@ip-172-31-14-70:~#
+
+
+
+root@ip-172-31-14-70:~# kubectl create deploy nginx3 --image=nginx --dry-run=client -o yaml > nginx-deploy-nodeselector.yaml
+
+
+root@ip-172-31-14-70:~# cat nginx-deploy-nodeselector.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx3
+  name: nginx3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx3
+  template:
+    metadata:
+      labels:
+        app: nginx3
+    spec:
+      nodeSelector:
+        env: dev
+      containers:
+      - image: nginx
+        name: nginx
+root@ip-172-31-14-70:~#
+
+root@ip-172-31-14-70:~# kubectl create -f nginx-deploy-nodeselector.yaml
+
+
+root@ip-172-31-14-70:~# kubectl get po -o wide
+NAME                      READY   STATUS    RESTARTS   AGE   IP                NODE              NOMINATED NODE   READINESS GATES
+nginx                     1/1     Running   0          18m   192.168.246.194   ip-172-31-15-48   <none>           <none>
+nginx3-5cfd948f98-lzms5   1/1     Running   0          20s   192.168.246.196   ip-172-31-15-48   <none>           <none>
+root@ip-172-31-14-70:~#
