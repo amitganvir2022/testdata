@@ -56,7 +56,7 @@ sudo su -
 su - jenkins
 mkdir ~/.kube
 ## Paste admin.conf file contente here
-vim /root/.kube/config
+vim ~/.kube/config
 
 Step3: Got Jenkions ec2 and Install kubeclt
 sudo su -
