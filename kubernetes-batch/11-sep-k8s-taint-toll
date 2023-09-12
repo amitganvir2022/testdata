@@ -1,0 +1,53 @@
+root@ip-172-31-10-42:~# kubectl get nodes
+NAME               STATUS   ROLES                  AGE   VERSION
+ip-172-31-10-42    Ready    control-plane,master   41m   v1.21.1
+ip-172-31-13-199   Ready    <none>                 39m   v1.21.1
+ip-172-31-15-48    Ready    <none>                 39m   v1.21.1
+ip-172-31-7-162    Ready    <none>                 39m   v1.21.1
+root@ip-172-31-10-42:~# kubectl taint nodes ip-172-31-7-162 env=blue:NoSchedule
+node/ip-172-31-7-162 tainted
+root@ip-172-31-10-42:~#
+
+root@ip-172-31-10-42:~# kubectl describe nodes  ip-172-31-7-162 |grep -i Taints
+Taints:             env=blue:NoSchedule
+root@ip-172-31-10-42:~#
+
+root@ip-172-31-10-42:~# kubectl taint nodes ip-172-31-15-48 env=yellow:NoSchedule
+root@ip-172-31-10-42:~# kubectl taint nodes ip-172-31-13-199 env=green:NoSchedule
+
+
+root@ip-172-31-10-42:~# kubectl run test1 --image=nginx
+root@ip-172-31-10-42:~# kubectl get po
+NAME    READY   STATUS    RESTARTS   AGE
+test1   0/1     Pending   0          90s
+
+root@ip-172-31-10-42:~# kubectl run test2 --image=nginx --dry-run=client -o yaml > test2pod.yaml
+
+root@ip-172-31-10-42:~# cat test2pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: test2
+  name: test2
+spec:
+  tolerations:
+  - key: "env"
+    value: "blue"
+    operator: "Equal"
+    effect: "NoSchedule"
+  containers:
+  - image: nginx
+    name: test2
+
+
+root@ip-172-31-10-42:~# kubectl create -f test2pod.yaml
+
+root@ip-172-31-10-42:~# kubectl get po -o wide
+NAME    READY   STATUS    RESTARTS   AGE     IP              NODE              NOMINATED NODE   READINESS GATES
+test1   0/1     Pending   0          7m26s   <none>          <none>            <none>           <none>
+test2   1/1     Running   0          25s     192.168.171.5   ip-172-31-7-162   <none>           <none>
+root@ip-172-31-10-42:~# kubectl get nodes ip-172-31-7-162|^C
+root@ip-172-31-10-42:~# kubectl describe nodes ip-172-31-7-162 |grep -i taint
+Taints:             env=blue:NoSchedule
+root@ip-172-31-10-42:~#
