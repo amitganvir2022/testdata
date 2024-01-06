@@ -8,4 +8,5 @@ docker images
 docker run -itd --name java1 -p 8081:8080  myjava:v1
 docker ps
 
+### allow all tracfic in Security Group before testing
 http://<ec2-public-ip>:8081
