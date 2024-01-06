@@ -24,3 +24,13 @@ EXPOSE 3000
 CMD npm start
 
 root@ip-172-31-18-18:~/nodejs# docker run -itd --name nodeapp1 -p 8082:3000 nodejs:v1
+======================================================================
+
+kubectl run fe1 --image=nginx:latest
+kubectl get pod
+kubectl -n default get pod
+
+kubectl create ns prod
+kubectl -n prod run fe2 --image=nginx:latest
+kubectl -n prod get pod
+
