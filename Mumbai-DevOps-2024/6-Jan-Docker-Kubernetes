@@ -2,6 +2,7 @@ git clone https://github.com/amitganvir2022/testdata.git
 mkdir myjava-app
 cp testdata/docker-java-image/* myjava-app/
 cd myjava-app/
+ls
 docker build . -t "myjava:v1"
 docker images
 docker run -itd --name java1 -p 8081:8080  myjava:v1
