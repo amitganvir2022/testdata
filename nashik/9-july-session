@@ -110,6 +110,10 @@ kubectl exec -it db-74f77dd886-nh6lg -- bash
 OR
 kubectl exec -it db-74f77dd886-nh6lg -- mysql -u root -p1234
 
-
-
 ==========
+docker run -p 3306:3306 --name mariadb -e MARIADB_ROOT_PASSWORD=1234 -itd bitnami/mariadb:latest
+docker run -p 5100:5100 -v /var/mm/:/var/mm --name mlflow -itd ghcr.io/mlflow/mlflow:v2.1.1 sh -c "pip install pymysql;mlflow server --host 0.0.0.0 -p 5100 --backend-store-uri mysql+pymysql://root:1234@172.17.0.2:3306/test --default-artifact-root file:///var/mm/mlflow/artifacts"
+
+
+minikube for Windows/Linux for Kubernetes
+
