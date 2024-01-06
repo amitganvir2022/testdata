@@ -10,3 +10,17 @@ docker ps
 
 ### allow all tracfic in Security Group before testing
 http://<ec2-public-ip>:8081
+-----------------------------------------------------
+##### Nodejs Docker
+---------------
+root@ip-172-31-18-18:~/nodejs# cat Dockerfile
+FROM node:16.13.1
+
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install --only=production
+COPY ./src ./src
+EXPOSE 3000
+CMD npm start
+
+root@ip-172-31-18-18:~/nodejs# docker run -itd --name nodeapp1 -p 8082:3000 nodejs:v1
