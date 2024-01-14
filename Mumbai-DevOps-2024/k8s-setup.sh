@@ -2,7 +2,7 @@
 
 
 # Step1: ---------------------------------------------------------------------------------------------------------------------------------
-Create Security Group and all all Traffic port as of now on temprory bases. Use this Security Group while launching Maseter and Worker ec2.
+Create Security Group and allow all Traffic port as of now on temprory bases. Use this Security Group while launching Maseter and Worker ec2.
 
 #Step2: ---------------------------------------------------------------------------------------------------------------------------------
 ##### Launche ec2 instances
