@@ -96,7 +96,22 @@ docker exec -it db bash
 https://54.167.93.19:30539/
 admin token for kubernetes dashboard
 eyJhbGciOiJSUzI1NiIsImtpZCI6Im1wdXlKNDBSRzhWZmdOeFJlR1V6eVNSbHJzUjZWX0pYZS0zVXB0MzlGVEEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkZXBsb3ltZW50LWNvbnRyb2xsZXItdG9rZW4tNjY1bjgiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGVwbG95bWVudC1jb250cm9sbGVyIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiNzBlMDg1YzEtN2IxNC00ZWZlLTliN2MtOGQzZDdlY2I5NzRhIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRlcGxveW1lbnQtY29udHJvbGxlciJ9.IDZcP5Ivz_-lJug1tvfNwUzrP_qdTSiCC6-vyEE5fu-NgNFzP0gUWSVNW-gU5DE5q3FQqmAvgZwlLwQRblmOFGitDlgJLmgt37sCBOk2u5Tz6ujAJLyGRzrCHx2Iy23k_QMD6_Pb9_ji_XjmqJhvsk0uulI0RM__0VEjm79SpNu1a1GNgVPNwfdxsK4N7PnkdEnZ_kJiHduZowidnEx1s7NF2LJNOxIfjUu2KwWo80oVmoalr9IJF-J0I3avgu-2sqcls84H3O-EBc3SB6QtdEHGN5Wc1UnP4uw-iS5oPVSY3ct_xVumAYTz1P9GbmpgC7NGGD1F9JejbGvi80mRkg
+-------------- POD deployment
+root@ip-172-31-92-1:~# cat amit-app1.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fe10
+  labels:
+    env: prod
+spec:
+  containers:
+  - name: fe10
+    image: nginx:latest
 
+root@ip-172-31-92-1:~# kubectl -n prod create -f amit-app1.yaml
+
+root@ip-172-31-92-1:~# kubectl -n prod get po
 
 
 
