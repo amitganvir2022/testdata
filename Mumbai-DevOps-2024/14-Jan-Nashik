@@ -72,9 +72,17 @@ COPY index.html /usr/share/nginx/html/index.html
 
 docker build . -t "amitfe:v1"
 docker run -itd --name myfe1 -p 8084:80 amitfe:v1
+docker ps
 
 http://<ec2-public-ip>:8084
 ---------------------------------------------------
+git clone https://github.com/amitganvir2022/testdata.git
+cd testdata/docker-java-image/
+docker build . -t "javaapp:v1"
+docker run -itd --name app1 -p 8085:8080 javaapp:v1
+docker ps
+
+http://<ec2-public-ip>:8085
 
 
 
