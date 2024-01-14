@@ -1,0 +1,23 @@
+us-east-1  <- Region
+Data Center:
+us-east-1a
+us-east-1b
+us-east-1c
+us-east-1d
+
+### how to launch ec2 instance
+Step1: Create KeyPairs for access server (onetime Process)
+[ec2] -> [Network & Security] -> [Key Pairs]
+[Crate Keypair] -> 
+keyname:nashikmet
+Private key file format: .ppk
+[Create key pair]
+
+Step2: 
+[ec2] -> [Instances] -> [Launch Instances]
+Name and tags: vm1
+AMI (OS): ubuntu
+Instance type: t2.micro (1cpu/1gbRam)
+Key pair: nashikmet
+[launch instance]
+----------------------------------------
