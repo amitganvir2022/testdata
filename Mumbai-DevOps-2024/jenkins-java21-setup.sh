@@ -1,8 +1,8 @@
 ################ Step1: Goto Jenkins ec2 and install Java 21
 sudo su -     ## login with root
 apt-get update
-apt-get install openjdk-21-jre
-apt-get install openjdk-21-jdk
+apt-get install openjdk-21-jre -y
+apt-get install openjdk-21-jdk -y
 
 #apt install default-jdk -y (#java11)
 #apt install default-jre -y (#java11)
