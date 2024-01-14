@@ -83,6 +83,15 @@ docker run -itd --name app1 -p 8085:8080 javaapp:v1
 docker ps
 
 http://<ec2-public-ip>:8085
+--------------------------------------
+
+docker run -itd --name db -e MARIADB_ROOT_PASSWORD=1234 bitnami/mariadb:latest
+docker ps
+docker exec -it db bash
+   $ hostname  -i
+   $mysql -uroot -p1234
+   > exit;
+   $exit;
 
 
 
