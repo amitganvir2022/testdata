@@ -94,7 +94,7 @@ sudo su -
 apt install maven -y
 
 ## use below command on jenkins jobs UI
-user your own repod  https://github.com/amitganvir2022/hello_maven.git
+user your own repod  https://github.com/amitganvir23/hello_maven.git
 cd lcd
 mvn clean
 mvn compile
