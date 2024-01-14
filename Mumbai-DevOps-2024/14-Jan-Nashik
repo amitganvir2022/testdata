@@ -113,5 +113,25 @@ root@ip-172-31-92-1:~# kubectl -n prod create -f amit-app1.yaml
 
 root@ip-172-31-92-1:~# kubectl -n prod get po
 
-
+----------------------- Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amit
+  labels:
+    app: amit
+spec:
+  template:
+    metadata:
+      name: amit
+      labels:
+        app: amit
+    spec:
+     containers:
+     - name: amit
+       image: nginx
+  replicas: 2
+  selector:
+    matchLabels:
+      app: amit
 
