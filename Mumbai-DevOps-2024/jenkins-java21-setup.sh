@@ -100,15 +100,24 @@ mvn clean
 mvn compile
 mvn package
 
+cd lcd
+ls
+mvn clean
+mvn compile
+mvn package
+
 DOCKER_USERNAME=amitganvir6
 DOCKER_PASSWORD="dckr_pat_FtkB8x_xWiGc9KQ6EqjRgwGbe3o"
 sudo docker login -u $DOCKER_USERNAME -p${DOCKER_PASSWORD}
 cp target/lcd-*-SNAPSHOT.jar lcd.jar
+
+### replace lcd with your name
 sudo docker build . -t "$DOCKER_USERNAME/lcd:v${BUILD_NUMBER}"
 sudo docker push $DOCKER_USERNAME/lcd:v${BUILD_NUMBER}
 
-
-kubectl run lcd --image=amitganvir6/lcd:v${BUILD_NUMBER}
-kubectl expose pod lcd --type=NodePort --port=8082
+kubectl run lcd --image=amitganvir6/lcd:v${BUILD_NUMBER} --dry-run=client -o yaml > pod.yaml
+kubectl apply -f pod.yaml
+kubectl expose pod lcd --type=NodePort --port=8082 --dry-run=client -o yaml > svc.yaml
+kubectl apply -f svc.yaml
 kubectl get svc lcd
 ################################################################################################################################################
