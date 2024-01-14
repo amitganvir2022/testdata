@@ -100,9 +100,13 @@ mvn clean
 mvn compile
 mvn package
 
-cp lcd/target/lcd-0.0.1-SNAPSHOT.jar lcd.jar
-sudo docker build . -t "amitganvir6/lcd:v${BUILD_NUMBER}"
-sudo docker push amitganvir6/lcd:v${BUILD_NUMBER}
+DOCKER_USERNAME=amitganvir6
+DOCKER_PASSWORD="dckr_pat_FtkB8x_xWiGc9KQ6EqjRgwGbe3o"
+sudo docker login -u $DOCKER_USERNAME -p${DOCKER_PASSWORD}
+cp target/lcd-*-SNAPSHOT.jar lcd.jar
+sudo docker build . -t "$DOCKER_USERNAME/lcd:v${BUILD_NUMBER}"
+sudo docker push $DOCKER_USERNAME/lcd:v${BUILD_NUMBER}
+
 
 kubectl run lcd --image=amitganvir6/lcd:v${BUILD_NUMBER}
 kubectl expose pod lcd --type=NodePort --port=8082
