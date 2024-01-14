@@ -13,7 +13,7 @@ keyname:nashikmet
 Private key file format: .ppk
 [Create key pair]
 
-Step2: 
+Step2: Launch instances/server/vm
 [ec2] -> [Instances] -> [Launch Instances]
 Name and tags: vm1
 AMI (OS): ubuntu
