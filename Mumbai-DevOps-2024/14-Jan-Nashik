@@ -20,4 +20,61 @@ AMI (OS): ubuntu
 Instance type: t2.micro (1cpu/1gbRam)
 Key pair: nashikmet
 [launch instance]
-----------------------------------------
+----------------------------------------------------------------------
+sudo su -
+docker pull busybox:latest
+docker images
+
+## docke run
+docker run <Option> <Image:tag> <Command/arguments>
+docker run -itd --name c1 busybox:latest echo "hello world"
+
+### to check only running container
+docker ps
+
+### to check all container
+docker ps -a
+
+### to check logs
+docker logs <Container ID/Name>
+docker logs c1
+
+docker run -itd --name c4 busybox:latest sh
+
+## how to jump in a container
+docker exec -it c4 sh
+docker exec -it c4 bash
+/ # exit
+
+### how to remote containers
+docker rm -f c1 c2 c3 c4
+
+### To run FE app
+docker run -itd --name fe1 tomcat:9.0
+
+
+-p <LocalPort>:<ContainerPort>
+docker run -itd --name fe3 -p 8081:80  nginx:latest
+docker run -itd --name fe4 -p 8082:80  nginx:latest
+
+### allow all tracfic in Security Group before testing
+http://<ec2-public-ip>:8081
+http://<ec2-public-ip>:8082
+---------------------------------------------------
+### how to create nginx docker image
+echo AMIT > index.html
+
+vim Dockerfile
+FROM nginx:latest
+COPY index.html /usr/share/nginx/html/index.html
+
+:wq
+
+docker build . -t "amitfe:v1"
+docker run -itd --name myfe1 -p 8084:80 amitfe:v1
+
+http://<ec2-public-ip>:8084
+---------------------------------------------------
+
+
+
