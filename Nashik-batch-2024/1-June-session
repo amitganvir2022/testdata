@@ -21,8 +21,9 @@ docker ps -a
 
 #### how to remove Containers
 # docker rm <ContainerIDs/Names>
-
-
+docker rm -f c1
+#### how to remove Containers forcefully
+docker rm -f vm1
 
 
 
