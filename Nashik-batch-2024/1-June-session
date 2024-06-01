@@ -22,9 +22,20 @@ docker ps -a
 #### how to remove Containers
 # docker rm <ContainerIDs/Names>
 docker rm -f c1
+
 #### how to remove Containers forcefully
 docker rm -f vm1
 
+
+# docker run -itd --name fe1 nginx
+#### how to Container logs
+# docker logs <ContainerIDs/Names>
+
+# docker run -itd --name fe1 -p 8080:80 nginx
+-p 8080:80
+-p <LocalPort>:<ContainerPort>
+
+http://<Ec2-IP>:8080
 
 
 
