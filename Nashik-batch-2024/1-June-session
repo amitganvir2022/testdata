@@ -52,6 +52,7 @@ root@ip-172-31-18-113:~#
 
 
 docker build . -t "amit-fe:v1"
+docker images
 docker run -itd --name myfe1 -p 8084:80 amit-fe:v1
 docker ps
 
