@@ -1,0 +1,29 @@
+docker run -itd --name c1 busybox:latest echo "Amit"
+docker ps -a
+
+
+#docker run -itd --name c3 busybox:latest sleep 1d
+
+# docker exec -it <ContainerID/Name> <Shell-Name>
+/ # exit
+
+# docker run -itd --name vm1 ubuntu sh
+# docker ps
+# docker exec -it vm1 bash
+/ # apt-get update -y
+/ # apt-get install  python-is-python3 -y
+/ # exit
+# docker stop vm1
+# docker ps -a
+# docker start vm1
+# docker ps
+
+
+#### how to remove Containers
+# docker rm <ContainerIDs/Names>
+
+
+
+
+
+
