@@ -30,12 +30,31 @@ docker rm -f vm1
 # docker run -itd --name fe1 nginx
 #### how to Container logs
 # docker logs <ContainerIDs/Names>
-
+-------------------------------------------------------------
 # docker run -itd --name fe1 -p 8080:80 nginx
 -p 8080:80
 -p <LocalPort>:<ContainerPort>
 
-http://<Ec2-IP>:8080
+### allow all tracfic in Security Group before testing
+http://<ec2-public-ip>:8080
+----------------------------------------------------------------
 
+
+----------------------------------------------------------------
+### how to create nginx docker image
+echo AMIT > index.html
+
+vim Dockerfile
+FROM nginx:latest
+COPY index.html /usr/share/nginx/html/index.html
+
+:wq
+
+docker build . -t "amitfe:v1"
+docker run -itd --name myfe1 -p 8084:80 amitfe:v1
+docker ps
+
+http://<ec2-public-ip>:8084
+----------------------------------------------------------------
 
 
