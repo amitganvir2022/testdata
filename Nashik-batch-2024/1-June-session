@@ -60,6 +60,7 @@ http://<ec2-public-ip>:8084
 ----------------------------------------------------------------
 
 ---------------------------------------------------
+### how to create Java springboot application docker image
 git clone https://github.com/amitganvir2022/testdata.git
 cd testdata/docker-java-image/
 docker build . -t "javaapp:v1"
