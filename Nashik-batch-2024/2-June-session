@@ -22,3 +22,7 @@ kubectl describe pod chetanapatil
 
 ## To check Container/pod logs
 kubectl logs amit2
+
+## To delete Pod
+kubectl delete pod amit2
+
