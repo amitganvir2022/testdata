@@ -35,6 +35,9 @@ sudo su -
 kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
 mkdir /root/.kube
 cp /etc/kubernetes/admin.conf /root/.kube/config
+echo 'KUBELET_EXTRA_ARGS="--cgroup-driver=cgroupfs"' > /etc/default/kubelet
+systemctl daemon-reload && sudo systemctl restart kubelet
+
 kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
