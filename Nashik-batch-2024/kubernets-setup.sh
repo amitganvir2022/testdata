@@ -39,7 +39,8 @@ echo 'KUBELET_EXTRA_ARGS="--cgroup-driver=cgroupfs"' > /etc/default/kubelet
 systemctl daemon-reload && sudo systemctl restart kubelet
 
 kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml -O
+kubectl apply -f calico.yaml
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
