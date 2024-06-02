@@ -40,3 +40,34 @@ spec:
     image: nginx:latest
 
 kubectl apply -f amit2.yaml
+
+## How to create pod using Deployment Yaml file
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: prod
+  name: amit3
+  labels:
+    app: amit3
+spec:
+  template:
+    metadata:
+      name: amit3
+      labels:
+        app: amit3
+    spec:
+     containers:
+     - name: amit3
+       image: nginx
+  replicas: 5
+  selector:
+    matchLabels:
+      app: amit3
+
+
+kubectl apply -f amit3-deploy.yaml
+kubectl -n prod get deploy
+kubectl -n prod get pod
+
+## TO delete objects using Yaml file
+kubectl delete -f amit3-deploy.yaml
