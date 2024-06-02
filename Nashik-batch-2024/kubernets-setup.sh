@@ -1,3 +1,5 @@
+## NOT WORKING due to Version
+
 #!/bin/bash 
 
 
