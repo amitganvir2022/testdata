@@ -38,7 +38,8 @@ cp /etc/kubernetes/admin.conf /root/.kube/config
 #kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 #kubectl apply -f https://docs.projectcalico.org/archive/v3.20/manifests/calico.yaml
 #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-curl https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml -O
+#curl https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml -O
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 kubectl apply -f calico.yaml
 
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
