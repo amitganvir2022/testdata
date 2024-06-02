@@ -10,4 +10,15 @@ kubectl get ns
 kubectl create ns project-a
 kubectl create ns prod
 
+
+## To run nginx pod/container
 kubectl run amit1 --image nginx:latest
+
+## To check pods/Containers
+kubectl get pods
+
+### To describe pods/Container
+kubectl describe pod chetanapatil
+
+## To check Container/pod logs
+kubectl logs amit2
