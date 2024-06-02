@@ -26,3 +26,17 @@ kubectl logs amit2
 ## To delete Pod
 kubectl delete pod amit2
 
+## Create a pod using yaml file
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: prod
+  name: amit3
+  labels:
+    type: fe
+spec:
+  containers:
+  - name: amit3
+    image: nginx:latest
+
+kubectl apply -f amit2.yaml
