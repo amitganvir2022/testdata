@@ -32,3 +32,5 @@ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | awk
 
 ## Verify Dashobard On firefox/chrome and Login with Above Admin-token
 https://<ec2-ip>:<NodePort>
+
+ kubectl create token admin-user -n kubernetes-dashboard
