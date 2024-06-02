@@ -1,0 +1,15 @@
+54.158.80.3
+sudo su -
+kubectl get nodes
+
+kubectl get namespace
+or
+kubectl get ns
+
+## To create namespace/project
+kubectl create ns project-a
+kubectl create ns prod
+
+
+docker run -itd --name amit1 nginx:latest
+kubectl run amit1 --image nginx:latest
