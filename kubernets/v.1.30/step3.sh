@@ -30,7 +30,7 @@ cat <<EOF | sudo tee /etc/default/kubelet
 KUBELET_EXTRA_ARGS="--cgroup-driver=cgroupfs"
 EOF
 
-cat <<EOF | sudo tee //etc/docker/daemon.json
+cat <<EOF | sudo tee /etc/docker/daemon.json
 {
       "exec-opts": ["native.cgroupdriver=systemd"],
       "log-driver": "json-file",
