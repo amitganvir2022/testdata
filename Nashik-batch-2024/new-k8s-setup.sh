@@ -2,13 +2,13 @@
 
 
 # Step1: ---------------------------------------------------------------------------------------------------------------------------------
-Create Security Group and allow all Traffic port as of now on temprory bases. Use this Security Group while launching Maseter and Worker ec2.
+- Create Security Group and allow all Traffic port as of now on temprory bases. Use this Security Group while launching Master and Worker ec2 Instances.
+- Create your KeyPair and use while launching Ec2 Instances
 
-#Step2: ---------------------------------------------------------------------------------------------------------------------------------
-##### Launche ec2 instances
-###### Use your Security Group while luanching and your keypair
-# 1) ec2 master Node Configuration - instance name : Ubuntu - Ubuntu, 22.04 LTS  - t2.medium - create key pair -network setting , security group set to allow all traffic as of now from anywhere  --> launch instace
-# 2) ec2 Worker Node Configuration - instance name : Ubuntu - Ubuntu, 22.04 LTS  - t2.micro - use existing key pair for master -network setting  , use existing security group for master - instance number 2 --> launch instace
+# Step2: ---------------------------------------------------------------------------------------------------------------------------------
+##### Launch your Two Ec2 instances 1 Master and 1 Worker.
+# 1) ec2 master Node Configuration :  - [Ubuntu, 24.04]  - [t2.medium] -> [Select Your KeyPair] - > [Select your Security Group]
+# 2) ec2 master Node Configuration :  - [Ubuntu, 24.04]  - [t2.micro] -> [Select Your KeyPair] - > [Select your Security Group]
 
 
 # Step3: ---------------------------------------------------------------------------------------------------------------------------------
@@ -69,8 +69,8 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 kubectl get nodes
-kubeadm token create --print-join-command
 
+kubeadm token create --print-join-command
 
 Step5: ---------------------------------------------------------------------------------------------------------------------------------
 #On Worker Side
@@ -78,9 +78,9 @@ Step5: -------------------------------------------------------------------------
 For example: ##kubeadm join 172.31.22.254:6443 --token t5wam7.35gqolngm80zf9di --discovery-token-ca-cert-hash sha256:60b88e1203525836853e98022aefe92348262bf8e63986dece6bb8270209daf4
 
 Step6: ---------------------------------------------------------------------------------------------------------------------------------
-# On Master Side, now execute below command to check cluster nodes.
+# On Master Side, now execute below command to check cluster nodes. Make sure all Nodes should be Ready Status.
 kubectl get nodes
------ DONE ---------
+------------------- DONE -------------------
 
 ### Run below command if you wnated to test DNS is working or not
 ## kubectl run busybox --image=busybox:1.28.4 --rm -it --restart=Never --command -- nslookup google.com
