@@ -100,5 +100,25 @@ spec:
   - name: amit3
     image: nginx:latest
 
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: prod
+  name: amit3
+  labels:
+    app: amit3
+spec:
+  template:
+    metadata:
+      name: amit3
+      labels:
+        app: amit3
+    spec:
+     containers:
+     - name: amit3
+       image: nginx
+  replicas: 5
+  selector:
+    matchLabels:
+      app: amit3
 
