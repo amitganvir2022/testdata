@@ -88,3 +88,17 @@ metadata:
   name: project-a
 
 
+## Create a pod using yaml file
+apiVersion: v1
+kind: Pod
+metadata:
+  name: amit3
+  labels:
+    type: fe
+spec:
+  containers:
+  - name: amit3
+    image: nginx:latest
+
+
+
