@@ -137,3 +137,30 @@ spec:
       name: http
   selector:
     app: amit3
+
+### DB yaml file
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  template:
+    metadata:
+      name: db
+      labels:
+        app: db
+    spec:
+     containers:
+     - name: db
+       image: bitnami/mariadb:latest
+       ports:
+        - containerPort: 3306
+       env:
+        - name: MARIADB_ROOT_PASSWORD
+          value: "1234"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
