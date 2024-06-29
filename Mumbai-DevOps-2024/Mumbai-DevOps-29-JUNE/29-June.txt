@@ -100,6 +100,8 @@ spec:
   - name: amit3
     image: nginx:latest
 
+
+## How to create pod using Deployment Yaml file
 apiVersion: apps/v1
 kind: Deployment
 metadata:
