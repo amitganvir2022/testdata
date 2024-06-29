@@ -68,5 +68,13 @@ docker ps
 
 http://<ec2-public-ip>:8085
 --------------------------------------
+### DB container rung
+docker run -itd --name mariadb2 --env MARIADB_ROOT_PASSWORD=1234  bitnami/MariaDB
+docker exec -it mariadb2 bash
+/$ mysql -uroot -p1234
+----------------------------------------------------------------------------
+--------------------------------------
+
+
 
 
