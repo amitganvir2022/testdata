@@ -45,10 +45,8 @@ docker run --name fe1 -p 8081:80  -itd nginx
 echo AMIT > index.html
 
 echo -e "FROM nginx:latest \nCOPY index.html /usr/share/nginx/html/index.html" > Dockerfile
-root@ip-172-31-18-113:~# cat Dockerfile
-FROM nginx:latest
-COPY index.html /usr/share/nginx/html/index.html
-root@ip-172-31-18-113:~#
+
+cat Dockerfile
 
 
 docker build . -t "amit-fe:v1"
@@ -60,6 +58,15 @@ http://<ec2-public-ip>:8084
 ----------------------------------------------------------------
 
 
+---------------------------------------------------
+### how to create Java springboot application docker image
+git clone https://github.com/amitganvir2022/testdata.git
+cd testdata/docker-java-image/
+docker build . -t "javaapp:v1"
+docker run -itd --name app1 -p 8085:8080 javaapp:v1
+docker ps
 
+http://<ec2-public-ip>:8085
+--------------------------------------
 
 
