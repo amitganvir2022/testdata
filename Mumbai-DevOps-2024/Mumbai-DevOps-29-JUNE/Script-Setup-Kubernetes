@@ -1,0 +1,29 @@
+##### Step1: ---------------------------------------------------------------------------------------------------------------------------------
+- Create Security Group and allow all Traffic port as of now on temprory bases. Use this Security Group while launching Master and Worker ec2 Instances.
+- Create your KeyPair and use while launching Ec2 Instances
+
+##### Step2: ---------------------------------------------------------------------------------------------------------------------------------
+#Launch your Two Ec2 instances 1 Master and 1 Worker.
+# 1) ec2 master Node Configuration :  - [Ubuntu, 24.04]  - [t2.medium] -> [Select Your KeyPair] - > [Select your Security Group]
+# 2) ec2 master Node Configuration :  - [Ubuntu, 24.04]  - [t2.micro] -> [Select Your KeyPair] - > [Select your Security Group]
+
+
+##### Step3: ---------------------------------------------------------------------------------------------------------------------------------
+##### Putty(ssh) Master and Worker ec2 and perofrm below commands on both Ec2 Instances - Login with root user #####
+sudo su -
+wget https://raw.githubusercontent.com/amitganvir2022/testdata/main/kubernets/v.1.30/step3.sh
+bash step3.sh
+
+##### Step4: # Performe below command On Master Ec2 Instances Side Only ---------------------------------------------------------------------------------------------------------------------------------
+wget https://raw.githubusercontent.com/amitganvir2022/testdata/main/kubernets/v.1.30/step4.sh
+bash step4.sh
+
+##### Step5: ---------------------------------------------------------------------------------------------------------------------------------
+#On Worker Ec2 Instances Side Only
+## Execute 'kubeadm token' command output from master node and run it in Worker node. So that it will join to as a Worker node in k8s cluster
+## For example: ##kubeadm join 172.31.22.254:6443 --token t5wam7.35gqolngm80zf9di --discovery-token-ca-cert-hash sha256:60b88e1203525836853e98022aefe92348262bf8e63986dece6bb8270209daf4
+
+#### Step6: ---------------------------------------------------------------------------------------------------------------------------------
+# On Master Ec2 Instances Side Only, now execute below command to check cluster nodes. Make sure all Nodes should be Ready Status.
+kubectl get nodes
+------------------- DONE -------------------
