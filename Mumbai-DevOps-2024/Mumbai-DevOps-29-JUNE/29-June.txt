@@ -123,6 +123,8 @@ spec:
     matchLabels:
       app: amit3
 
+
+
 ## Creating NodePort Service
 apiVersion: v1
 kind: Service
@@ -137,6 +139,16 @@ spec:
       name: http
   selector:
     app: amit3
+
+
+### to deploy changes from file
+kubectl -n prod create -f service.yaml
+
+### To list servcies
+kubectl -n prod get service
+
+### TO delete service from file
+kubectl -n prod delete -f service.yaml
 
 ### DB yaml file
 apiVersion: apps/v1
@@ -164,3 +176,15 @@ spec:
   selector:
     matchLabels:
       app: db
+
+### to deploy changes from file
+kubectl apply -f db.yaml
+
+## To check list pods/containers
+kubectl get po
+
+### To connect with Pod/Container
+kubectl exec -it <POD-NAME> -- bash
+
+### TO delete Deployment from file
+kubectl -n prod delete -f db.yaml
