@@ -74,7 +74,7 @@ docker exec -it mariadb2 bash
 /$ mysql -uroot -p1234
 ----------------------------------------------------------------------------
 --------------------------------------
-
+################## Kubernetes Topic #################################################
 K8s Dashboard: https://3.94.130.84:31976
 TOKEN:
 eyJhbGciOiJSUzI1NiIsImtpZCI6IjNQM0dQS1M4Y0tDd29FWFd5aTVncWFkeGVGQmY0WEt3cTVjb2hZSHJ6b00ifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNzE5NjYyNTA3LCJpYXQiOjE3MTk2NTg5MDcsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwianRpIjoiZDNjMGYzMTQtMDFhYS00ZDlhLTlhNWYtNDE1YjBiZWM2Y2EwIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJhZG1pbi11c2VyIiwidWlkIjoiZDQzN2FlNTYtOGE3My00NWIyLTk4MjgtYWI5MTU0NzQxMGZmIn19LCJuYmYiOjE3MTk2NTg5MDcsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDphZG1pbi11c2VyIn0.ui-YPzU6N2lpkgidugdbaOApYwM4QbBmisWuWjFWkZVB_zTsXTtljLqIWZ9WG5nNRCpkaNvU-FmG8evlwn9UzWO6KMsPDe8_3h9_DFkSGSWUaZmhDaQQ24Oe0v4omaIb0XVyQZiDgdys8uqXBzQcI-EpVUxQxHx-V0o6JQ8w8Qvn8jfi01tTXzaYaYzPVYtgxtNGaTbFGBm-zhp_eBftNMeOV9d6Kam9zlf3fjPahtix7bWxP6CIXea9HNiEJiELiWSC2GLQZUauoOxQbrZLTq7MZL3fZRPAwj0SUtd0P69sqZClBOz8-FxKm6gNH6fCEGma29LdvPEExIN1T59dCA
