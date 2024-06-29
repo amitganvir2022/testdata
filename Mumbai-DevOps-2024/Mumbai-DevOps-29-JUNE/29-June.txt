@@ -1,2 +1,45 @@
+52.23.178.205
+ubuntu
+sudo su -
 
-student ip: 52.23.178.205
+apt-get update
+apt-get install docker.io -y
+
+systemctl status docker
+
+
+### how to run docker container
+docker pull busybox:latest
+docker images
+## run
+#syntax: docker run <option> <ImageNmae> <CMD>
+
+docker run -it busybox:latest echo "hello Amit"
+
+## to check running containers
+docker ps
+
+docker run -itd busybox sleep 1d
+docker run --name amit -itd busybox sleep 1d
+
+## To connect with container
+#syntax: docker exec -it <ContainerName/ID> <sh/bash>
+docker exec -it amit sh
+
+
+## To stop and start Containers
+#syntax: docker stop/start <ContainerName/ID>
+docker stop amit
+docker start amit
+
+## To Remote Containers. Use -f for forcefully
+#syntax: docker rm <ContainerName/ID>
+docker rm amit
+docker rm -f amit
+
+
+
+
+
+
+
